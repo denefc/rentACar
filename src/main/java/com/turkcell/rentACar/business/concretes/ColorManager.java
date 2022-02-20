@@ -44,12 +44,12 @@ public class ColorManager implements ColorService {
         
             Color color = this.modelMapperService.forRequest().map(createColorRequest, Color.class);
             if(!checkIfNameNotDuplicated(color.getName()).isSuccess()) {
-                return new ErrorDataResult(createColorRequest,"This color is already exists : " + color.getName());
+                return new ErrorDataResult<>(createColorRequest,checkIfNameNotDuplicated(color.getName()).getMessage());
 
             }
 
         this.colorDao.save(color);
-        return new SuccessDataResult(createColorRequest,"Data added : " + color.getName());
+        return new SuccessDataResult<>(createColorRequest,"Data added : " + color.getName());
 
     }
 
@@ -57,7 +57,7 @@ public class ColorManager implements ColorService {
     public DataResult<ColorDto> getById(int id){
        
         if(!checkIfIdExist(id).isSuccess()) {
-            return new ErrorDataResult("There is no colour with the following id : " + id);
+            return new ErrorDataResult<>(checkIfIdExist(id).getMessage());
         }
 
         Color color = this.colorDao.findById(id);
@@ -66,19 +66,18 @@ public class ColorManager implements ColorService {
 
     }
 
-
     @Override
     public Result update(int id, UpdateColorRequest updateColorRequest){
       
             
         if(!checkIfIdExist(id).isSuccess()) {
-            return new ErrorResult("There is no data with following id : " + id);
+            return new ErrorResult(checkIfIdExist(id).getMessage());
 		}
 
         Color color = this.colorDao.getById(id);
 
         if(!checkIfNameNotDuplicated(updateColorRequest.getName()).isSuccess()) {
-            return new ErrorResult("This color is already exists " + updateColorRequest.getName());
+            return new ErrorResult(checkIfNameNotDuplicated(updateColorRequest.getName()).getMessage());
         }
         String colorNameBeforeUpdate = this.colorDao.findById(id).getName();
         updateColorOperations(color, updateColorRequest);
@@ -91,7 +90,7 @@ public class ColorManager implements ColorService {
     public Result delete(int id){
 
         if(!checkIfIdExist(id).isSuccess()) {
-            return new ErrorResult("There is no data with following id : " + id);
+            return new ErrorResult(checkIfIdExist(id).getMessage());
         }
         String colorNameBeforeDeleted = this.colorDao.getById(id).getName();
         this.colorDao.deleteById(id);
@@ -106,7 +105,7 @@ public class ColorManager implements ColorService {
     private Result checkIfNameNotDuplicated(String name){
 
         if (this.colorDao.existsByName(name)) {
-           return new ErrorResult("This color is already exist in system!");
+           return new ErrorResult("This color is already exist in system: " + name);
         }
         return new SuccessResult();
     }
