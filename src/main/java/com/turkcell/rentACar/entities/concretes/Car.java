@@ -1,5 +1,7 @@
 package com.turkcell.rentACar.entities.concretes;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,7 +20,7 @@ public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private int carId;
 
 
     @Column(name = "daily_price")
@@ -33,12 +35,15 @@ public class Car {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand")
+    @JoinColumn(name = "brand_id")
     private Brand brand;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "color")
+    @JoinColumn(name = "color_id")
     private Color color;
+    
+
+	@OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<CarMaintenance> carMaintenances;
 
 }
