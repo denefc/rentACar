@@ -2,9 +2,12 @@ package com.turkcell.rentACar.business.concretes;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.turkcell.rentACar.business.abstracts.BrandService;
+import com.turkcell.rentACar.business.abstracts.ColorService;
+import com.turkcell.rentACar.business.requests.DeleteCarRequest;
+import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.*;
-import com.turkcell.rentACar.dataAccess.abstracts.BrandDao;
-import com.turkcell.rentACar.dataAccess.abstracts.ColorDao;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,200 +21,111 @@ import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
 import com.turkcell.rentACar.entities.concretes.Car;
 import lombok.AllArgsConstructor;
-
 @Service
 @AllArgsConstructor
 public class CarManager implements CarService {
 
     private CarDao carDao;
-    private BrandDao brandDao;
-    private ColorDao colorDao;
+
     private ModelMapperService modelMapperService;
 
 
     @Override
-    public DataResult<List<CarListDto>>getAll() {
+    public DataResult<List<CarListDto>> getAll() {
+        List<Car> result = carDao.findAll();
 
-        List<Car> cars = carDao.findAll();
-
-        List<CarListDto> carListDtos = cars.stream()
+        List<CarListDto> response = result.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
 
-        return new SuccessDataResult<List<CarListDto>>(carListDtos,"Data listed");
+        return new SuccessDataResult<List<CarListDto>>(response, "Cars are listed successfuly.");
     }
 
-
     @Override
-    public Result add(CreateCarRequest createCarRequest){
+    public Result add(CreateCarRequest createCarRequest) {
+        Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 
-           	Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
-            if (!checkIfBrandIdExist(createCarRequest.getBrandId()).isSuccess()){
+        this.carDao.save(car);
 
-                return new ErrorResult(checkIfBrandIdExist(createCarRequest.getBrandId()).getMessage());
-            }
-
-            if (!checkIfColorIdExist(createCarRequest.getColorId()).isSuccess()){
-
-                return new ErrorResult(checkIfColorIdExist(createCarRequest.getColorId()).getMessage());
-            }
-
-            if(!checkIfCarExist(car).isSuccess()) {
-
-                return new ErrorDataResult<>(createCarRequest,checkIfCarExist(car).getMessage());
-
-            }
-
-            this.carDao.save(car);
-            return new SuccessDataResult<>(createCarRequest,"Data added");
-
+        return new SuccessResult("Car is added.");
     }
 
-
     @Override
-    public Result update(int id, UpdateCarRequest updateCarRequest){
+    public Result update(UpdateCarRequest updateCarRequest) throws BusinessException {
+        checkIfCarExist(updateCarRequest.getCarId());
+        Car car = this.modelMapperService.forRequest().map(updateCarRequest, Car.class);
 
-            if(!checkIfIdExist(id).isSuccess()) {
-                return new ErrorResult(checkIfIdExist(id).getMessage());
-            }
+        this.carDao.save(car);
 
-            Car car = this.carDao.getById(id);
-
-
-            if(!carAndRequestParameterIsNotEqual(car,updateCarRequest).isSuccess()){
-                return new ErrorResult(carAndRequestParameterIsNotEqual(car,updateCarRequest).getMessage());
-            }
-            updateCarOperations(car, updateCarRequest);
-            CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
-            this.carDao.save(car);
-
-            return new SuccessDataResult<>(carDto,"Data updated, new data: ");
+        return new SuccessResult("Car is updated.");
     }
 
-
     @Override
-    public Result delete(int id){
-        
-            if(!checkIfIdExist(id).isSuccess()) {
-
-                return new ErrorResult(checkIfIdExist(id).getMessage());
-            }
-
-            CarDto carDto = this.modelMapperService.forDto().map(this.carDao.getById(id), CarDto.class);
-            this.carDao.deleteById(id);
-            return new SuccessDataResult<>(carDto,"Data deleted");
-
+    public Result deleteById(DeleteCarRequest deleteCarRequest) throws BusinessException {
+        checkIfCarExist(deleteCarRequest.getCarId());
+        this.carDao.deleteById(deleteCarRequest.getCarId());
+        return new SuccessResult("Car is deleted.");
     }
 
-
     @Override
-	public DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice) {
-		List<Car> cars = this.carDao.findByDailyPriceLessThanEqual(dailyPrice);
-		
-		List<CarListDto> carListDtos = cars.stream()
+    public DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo-1, pageSize);
+        List<Car> result = carDao.findAll(pageable).getContent();
+        List<CarListDto> response = result.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
-		return new SuccessDataResult<List<CarListDto>>(carListDtos,"Data listed");
-	}
-
-
-	@Override
-	public DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) {
-		Pageable pageable = PageRequest.of(pageNo-1, pageSize);
-		List<Car> cars = this.carDao.findAll(pageable).getContent();
-		List<CarListDto> carListDtos = cars.stream()
-                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
-                .collect(Collectors.toList());
-		return new SuccessDataResult<List<CarListDto>>(carListDtos,"Data paged");
-	}
-
-
-	@Override
-	public DataResult<List<CarListDto>> getAllSortedByDailyPrice(String sortType) {
-
-            if (!checkIfSortTypeNotASCOrDESC(sortType).isSuccess()){
-                return new ErrorDataResult<>(checkIfSortTypeNotASCOrDESC(sortType).getMessage());
-            }
-
-			Sort sort = Sort.by(Sort.Direction.fromString(sortType),"dailyPrice");
-			List<Car> cars = this.carDao.findAll(sort);
-			List<CarListDto> carListDtos = cars.stream()
-	                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
-	                .collect(Collectors.toList());
-		return new SuccessDataResult<List<CarListDto>>(carListDtos,"Data listed");
-	}
-
+        return new SuccessDataResult<List<CarListDto>>(response);
+    }
 
     @Override
-    public DataResult<CarDto> getById(int id){
-        
-            if(!checkIfIdExist(id).isSuccess()){
-                return new ErrorDataResult<>(null,checkIfIdExist(id).getMessage());
-            }
+    public DataResult<List<CarListDto>> getAllSorted(String ascOrDesc) {
+        Sort sort;
+        String value = (ascOrDesc.equals("ASC") || ascOrDesc.equals("DESC") ) ? ascOrDesc : "DESC";
 
-            Car car = this.carDao.getById(id);
-            CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
-            return new SuccessDataResult<CarDto>(carDto,"Data getted");
+        sort = Sort.by(Sort.Direction.valueOf(value),"dailyPrice");
+
+        List<Car> result = carDao.findAll(sort);
+        List<CarListDto> response = result.stream()
+                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
+                .collect(Collectors.toList());
+        return new SuccessDataResult<List<CarListDto>>(response);
     }
 
+    @Override
+    public DataResult<List<CarListDto>> getByDailyPriceIsLessThanEqual(double dailyPrice) {
+        List<Car> result = carDao.getByDailyPriceIsLessThanEqual(dailyPrice);
+        List<CarListDto> response = result.stream()
+                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
+                .collect(Collectors.toList());
 
-    private Result checkIfCarExist(Car car){
-        if (
-                carDao.existsByDailyPrice(car.getDailyPrice()) &&
-                carDao.existsByModelYear(car.getModelYear()) &&
-                carDao.existsByDescription(car.getDescription()) &&
-                carDao.existsByBrand_Id(car.getBrand().getId()) &&
-                carDao.existsByColor_Id(car.getColor().getId())
-        ) {
-             return new ErrorResult("This car is already exist!");
+        return new SuccessDataResult<List<CarListDto>>(response, "Cars are listed successfuly.");
+    }
+
+    @Override
+    public DataResult<CarDto> getById(int carId) throws BusinessException {
+        checkIfCarExist(carId);
+        Car car = this.carDao.getById(carId);
+
+        CarDto response = this.modelMapperService.forDto().map(car, CarDto.class);
+
+        return new SuccessDataResult<CarDto>(response);
+    }
+
+    @Override
+    public DataResult<List<CarListDto>> getByModelYearIsLessThanEqual(int modelYear) {
+        List<Car> result = carDao.getByModelYearIsLessThanEqual(modelYear);
+        List<CarListDto> response = result.stream()
+                .map(car->this.modelMapperService.forDto().map(car, CarListDto.class))
+                .collect(Collectors.toList());
+
+        return new SuccessDataResult<List<CarListDto>>(response, "Cars are listed by less than " + modelYear);
+    }
+
+    public boolean checkIfCarExist(int id) throws BusinessException {
+        if(carDao.existsById(id) == false) {
+            throw new BusinessException("Car does not exist by id:" + id);
         }
-        return new SuccessResult();
+        return true;
     }
 
-    private void updateCarOperations(Car car, UpdateCarRequest updateCarRequest) {
-        car.setDailyPrice(updateCarRequest.getDailyPrice());
-        car.setDescription(updateCarRequest.getDescription());
-    }
-
-    private Result checkIfIdExist(int id){
-        if (!this.carDao.existsById(id)) {
-            return new ErrorResult("There is no car with following id: " + id);
-        }
-        return new SuccessResult();
-    }
-
-    private Result checkIfColorIdExist(int id){
-        if(!this.colorDao.existsById(id)){
-            return new ErrorResult("There is no color with following id: "+id);
-        }
-        return new SuccessResult();
-    }
-
-    private Result checkIfBrandIdExist(int id){
-        if(!this.brandDao.existsById(id)){
-            return new ErrorResult("There is no brand with following id: "+id);
-        }
-        return new SuccessResult();
-    }
-
-    private Result carAndRequestParameterIsNotEqual(Car car, UpdateCarRequest updateCarRequest){
-        if(
-                car.getDailyPrice()==updateCarRequest.getDailyPrice() &&
-                car.getDescription().equals(updateCarRequest.getDescription())
-
-        ){
-            return new ErrorResult("Initial values are completely equal to update values, no need to update");
-        }
-        return new SuccessResult();
-    }
-
-    private Result checkIfSortTypeNotASCOrDESC(String sortType){
-        if(
-            sortType.equals("ASC") || sortType.equals("DESC")
-        ){
-            return new SuccessResult();
-
-        }
-        return new ErrorResult("Please enter a correct sort type (ASC or DESC)");
-    }
 }

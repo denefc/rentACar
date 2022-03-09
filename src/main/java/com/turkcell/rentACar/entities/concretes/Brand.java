@@ -18,14 +18,14 @@ public class Brand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "brand_id")
     private int brandId;
 
     @Column(name = "name")
-    private String name;
+    private String brandName;
 
 
-    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "brand")
     private List<Car> cars;
 
 }

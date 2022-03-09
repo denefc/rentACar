@@ -14,16 +14,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "colors")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lazy"})
 public class Color {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "color_id")
     private int colorId;
 
     @Column(name = "name")
-    private String name;
+    private String colorName;
 
 
     @OneToMany(mappedBy = "color", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

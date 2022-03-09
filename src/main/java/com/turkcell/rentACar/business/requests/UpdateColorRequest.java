@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateColorRequest {
 
-    private String name;
+    private int colorId;
+    private String colorName;
 
 }

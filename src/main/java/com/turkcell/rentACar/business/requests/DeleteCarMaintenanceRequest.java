@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CreateBrandRequest {
-
-    private String brandName;
+@AllArgsConstructor
+public class DeleteCarMaintenanceRequest {
+    private int carMaintenanceId;
 }
-

@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateColorRequest {
 
-    private String name;
+    private String colorName;
 }

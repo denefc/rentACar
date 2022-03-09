@@ -4,6 +4,7 @@ package com.turkcell.rentACar;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.ErrorDataResult;
 
 
@@ -31,6 +31,7 @@ public class RentACarApplication {
 	public ModelMapper getModelMapper(){
 		return new ModelMapper();
 	}
+
 	@ExceptionHandler
 	@ResponseStatus(code=HttpStatus.BAD_REQUEST)
 	public ErrorDataResult<Object> handleValidationExceptions(MethodArgumentNotValidException methArgumentNotValidException){

@@ -4,7 +4,9 @@ import com.turkcell.rentACar.business.abstracts.ColorService;
 import com.turkcell.rentACar.business.dtos.ColorDto;
 import com.turkcell.rentACar.business.dtos.ColorListDto;
 import com.turkcell.rentACar.business.requests.CreateColorRequest;
+import com.turkcell.rentACar.business.requests.DeleteColorRequest;
 import com.turkcell.rentACar.business.requests.UpdateColorRequest;
+import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 
@@ -26,25 +28,29 @@ public class ColorsController {
         return this.colorService.getAll();
     }
 
+    @GetMapping("/getbyid")
+    public DataResult<ColorDto> getById(@RequestParam(required = true) int colorId) throws BusinessException {
+        return this.colorService.getById(colorId);
+    }
+
     @PostMapping("/add")
-    public Result add(@RequestBody CreateColorRequest createColorRequest){
+    public Result add(@RequestBody CreateColorRequest createColorRequest) throws BusinessException {
+
         return this.colorService.add(createColorRequest);
     }
 
-    @GetMapping("/getbyid")
-    public DataResult<ColorDto> getById(@RequestParam(required = true) int id){
-        return this.colorService.getById(id);
+    @PostMapping("/update")
+    public Result update(@RequestBody UpdateColorRequest updateColorRequest) throws BusinessException {
+        return this.colorService.update(updateColorRequest);
     }
 
-    @PostMapping("/delete")
-    public Result delete(@RequestParam int id){
-       return this.colorService.delete(id);
+    @PostMapping("/deletebyid")
+    public Result deleteById(@RequestBody DeleteColorRequest deleteColorRequest) throws BusinessException {
+
+        return this.colorService.deleteById(deleteColorRequest);
     }
 
-    @PutMapping("/update")
-    public Result update(@RequestParam int id, @RequestBody UpdateColorRequest updateColorRequest){
-       return this.colorService.update(id, updateColorRequest);
-    }
+
 
 
 }

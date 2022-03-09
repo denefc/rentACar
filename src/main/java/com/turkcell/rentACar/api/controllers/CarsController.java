@@ -2,6 +2,10 @@ package com.turkcell.rentACar.api.controllers;
 
 import java.util.List;
 
+import com.turkcell.rentACar.business.requests.DeleteCarRequest;
+import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
+
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +23,8 @@ import com.turkcell.rentACar.core.utilities.results.Result;
 
 import lombok.AllArgsConstructor;
 
+import javax.validation.Valid;
+
 @RequestMapping("/api/cars")
 @RestController
 @AllArgsConstructor
@@ -32,35 +38,46 @@ public class CarsController {
     }
 
     @PostMapping("/add")
-    public Result add(@RequestBody CreateCarRequest createCarRequest){
-        return this.carService.add(createCarRequest);
+    public Result add( @Valid CreateCarRequest createcarRequest) throws BusinessException {
+
+        return this.carService.add(createcarRequest);
     }
 
     @GetMapping("/getbyid")
-    public DataResult<CarDto> getById(@RequestParam(required = true) int id){
-        return this.carService.getById(id);
+    public DataResult<CarDto> getById(@RequestParam(required = true) int carId) throws BusinessException {
+        return this.carService.getById(carId);
     }
 
-    @PostMapping("/delete")
-    public Result delete(@RequestParam int id){
-        return this.carService.delete(id);
+    @PostMapping("/update")
+    public Result update(@RequestBody UpdateCarRequest updatecarRequest) throws BusinessException {
+        return this.carService.update(updatecarRequest);
     }
 
-    @PutMapping("/update")
-    public Result update(@RequestParam int id, @RequestBody UpdateCarRequest updateCarRequest){
-        return this.carService.update(id, updateCarRequest);
+    @PostMapping("/deletebyid")
+    public Result deleteById(@RequestBody DeleteCarRequest deleteCarRequest) throws BusinessException {
+
+        return this.carService.deleteById(deleteCarRequest);
     }
-    @GetMapping("/findByDailyPriceLessThanEqual")
-    DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice){
-    	return this.carService.findByDailyPriceLessThanEqual(dailyPrice);
-    }
+
     @GetMapping("/getAllPaged")
-    DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize){
-    	return this.carService.getAllPaged(pageNo, pageSize);
+    public DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) {
+        return this.carService.getAllPaged(pageNo, pageSize);
     }
-    @GetMapping("/getAllSortedByDailyPrice")
-    DataResult<List<CarListDto>> getAllSortedByDailyPrice(String sortType){
-    	return this.carService.getAllSortedByDailyPrice(sortType);
+
+    @GetMapping("/getAllSorted")
+    public DataResult<List<CarListDto>> getAllSorted(String ascOrDesc) {
+        return this.carService.getAllSorted(ascOrDesc);
     }
+
+    @GetMapping("/sortAllByDailyPrice")
+    public DataResult<List<CarListDto>> getByDailyPriceIsLessThanEqual(double dailyPrice) {
+        return this.carService.getByDailyPriceIsLessThanEqual(dailyPrice);
+    }
+
+    @GetMapping("/sortByModelYear")
+    public DataResult<List<CarListDto>> getByModelYearIsLessThanEqual(int modelYear) {
+        return this.carService.getByModelYearIsLessThanEqual(modelYear);
+    }
+
 
 }

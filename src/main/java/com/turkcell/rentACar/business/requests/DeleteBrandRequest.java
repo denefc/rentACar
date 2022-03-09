@@ -1,15 +1,12 @@
-package com.turkcell.rentACar.business.dtos;
+package com.turkcell.rentACar.business.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class BrandDto {
-
+@AllArgsConstructor
+public class DeleteBrandRequest {
     private int brandId;
-    private String brandName;
-
 }

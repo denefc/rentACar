@@ -19,7 +19,7 @@ public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "car_id")
     private int carId;
 
 
@@ -34,16 +34,19 @@ public class Car {
     private String description;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "color_id")
     private Color color;
-    
 
-	@OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+    @OneToMany(mappedBy = "car",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	private List<CarMaintenance> carMaintenances;
+
+    @OneToMany(mappedBy = "car")
+    private List<Rental> rentals;
 
 }
