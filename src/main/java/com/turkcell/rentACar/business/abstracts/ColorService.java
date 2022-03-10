@@ -4,9 +4,8 @@ import java.util.List;
 
 import com.turkcell.rentACar.business.dtos.ColorDto;
 import com.turkcell.rentACar.business.dtos.ColorListDto;
-import com.turkcell.rentACar.business.requests.CreateColorRequest;
-import com.turkcell.rentACar.business.requests.DeleteColorRequest;
-import com.turkcell.rentACar.business.requests.UpdateColorRequest;
+import com.turkcell.rentACar.business.requests.createRequests.CreateColorRequest;
+import com.turkcell.rentACar.business.requests.updateRequests.UpdateColorRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
@@ -21,5 +20,5 @@ public interface ColorService {
 
     Result update(UpdateColorRequest updateColorRequest) throws BusinessException;
 
-    Result deleteById(DeleteColorRequest deleteColorRequest) throws BusinessException;
+    Result deleteById(int id) throws BusinessException;
 }

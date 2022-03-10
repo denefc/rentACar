@@ -3,22 +3,22 @@ package com.turkcell.rentACar.api.controllers;
 import com.turkcell.rentACar.business.abstracts.RentalService;
 import com.turkcell.rentACar.business.dtos.RentalDto;
 import com.turkcell.rentACar.business.dtos.RentalListDto;
-import com.turkcell.rentACar.business.requests.CreateRentalRequest;
-import com.turkcell.rentACar.business.requests.DeleteRentalRequest;
-import com.turkcell.rentACar.business.requests.UpdateRentalRequest;
+import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequest;
+import com.turkcell.rentACar.business.requests.updateRequests.UpdateRentalRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalsController {
 
-    private RentalService rentalService;
+    private final RentalService rentalService;
 
     @Autowired
     public RentalsController(RentalService rentalService) {
@@ -38,7 +38,7 @@ public class RentalsController {
     }
 
     @PostMapping("/add")
-    public Result add(@RequestBody CreateRentalRequest createRentalRequest) throws BusinessException{
+    public Result add(@Valid @RequestBody CreateRentalRequest createRentalRequest) throws BusinessException{
         return this.rentalService.add(createRentalRequest);
 
     }
@@ -49,14 +49,14 @@ public class RentalsController {
 
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public Result update(@RequestBody UpdateRentalRequest updateRentalRequest) throws BusinessException {
         return this.rentalService.update(updateRentalRequest);
 
     }
 
-    @PostMapping("/delete")
-    public Result delete(@RequestBody DeleteRentalRequest deleteRentalRequest) throws BusinessException {
-        return this.rentalService.delete(deleteRentalRequest);
+    @DeleteMapping("/delete/{id}")
+    public Result deleteById(@RequestParam int id)  throws BusinessException {
+        return this.rentalService.deleteById(id);
     }
 }

@@ -5,31 +5,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "rentals")
-public class Rental {
+@Table(name = "additional_services")
+public class AdditionalService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rental_id")
-    private int rentalId;
+    @Column(name = "additional_service_id")
+    private int additionalServiceId;
 
-    @Column(name = "start_date")
-    private LocalDate startDate;
+    @Column(name = "additional_service_name")
+    private String name;
 
-    @Column(name = "end_date")
-    private LocalDate endDate;
+    @Column(name = "additional_service_dailyPrice")
+    private double dailyPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "car_id")
-    private Car car;
-
-    @OneToMany(mappedBy = "rental")
+    @OneToMany(mappedBy = "additionalService")
     private List<OrderedAdditionalService> orderedAdditionalServices;
 }

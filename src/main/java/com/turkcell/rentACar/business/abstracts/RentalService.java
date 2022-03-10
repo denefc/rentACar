@@ -2,9 +2,8 @@ package com.turkcell.rentACar.business.abstracts;
 
 import com.turkcell.rentACar.business.dtos.RentalDto;
 import com.turkcell.rentACar.business.dtos.RentalListDto;
-import com.turkcell.rentACar.business.requests.CreateRentalRequest;
-import com.turkcell.rentACar.business.requests.DeleteRentalRequest;
-import com.turkcell.rentACar.business.requests.UpdateRentalRequest;
+import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequest;
+import com.turkcell.rentACar.business.requests.updateRequests.UpdateRentalRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
@@ -22,5 +21,5 @@ public interface RentalService {
 
     Result update(UpdateRentalRequest updateRentalRequest) throws BusinessException;
 
-    Result delete(DeleteRentalRequest deleteRentalRequest) throws BusinessException;
+    Result deleteById(int id) throws BusinessException;
 }

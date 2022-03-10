@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "cars")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lazy"})
 public class Car {
 
     @Id
@@ -43,7 +41,7 @@ public class Car {
     private Color color;
 
 
-    @OneToMany(mappedBy = "car",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "car")
 	private List<CarMaintenance> carMaintenances;
 
     @OneToMany(mappedBy = "car")

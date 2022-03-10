@@ -1,17 +1,22 @@
-package com.turkcell.rentACar.business.requests;
+package com.turkcell.rentACar.business.requests.updateRequests;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateRentalRequest {
+public class UpdateRentalRequest {
+    @NotNull
+    @Positive
+    private int rentalId;
 
     @NotNull
     private LocalDate startDate;

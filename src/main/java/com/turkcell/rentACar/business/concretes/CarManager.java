@@ -3,9 +3,6 @@ package com.turkcell.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.turkcell.rentACar.business.abstracts.BrandService;
-import com.turkcell.rentACar.business.abstracts.ColorService;
-import com.turkcell.rentACar.business.requests.DeleteCarRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.*;
 import org.springframework.data.domain.PageRequest;
@@ -15,8 +12,8 @@ import org.springframework.stereotype.Service;
 import com.turkcell.rentACar.business.abstracts.CarService;
 import com.turkcell.rentACar.business.dtos.CarDto;
 import com.turkcell.rentACar.business.dtos.CarListDto;
-import com.turkcell.rentACar.business.requests.CreateCarRequest;
-import com.turkcell.rentACar.business.requests.UpdateCarRequest;
+import com.turkcell.rentACar.business.requests.createRequests.CreateCarRequest;
+import com.turkcell.rentACar.business.requests.updateRequests.UpdateCarRequest;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
 import com.turkcell.rentACar.entities.concretes.Car;
@@ -38,13 +35,12 @@ public class CarManager implements CarService {
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
 
-        return new SuccessDataResult<List<CarListDto>>(response, "Cars are listed successfuly.");
+        return new SuccessDataResult<>(response, "Cars are listed successfuly.");
     }
 
     @Override
     public Result add(CreateCarRequest createCarRequest) {
         Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
-
         this.carDao.save(car);
 
         return new SuccessResult("Car is added.");
@@ -52,7 +48,7 @@ public class CarManager implements CarService {
 
     @Override
     public Result update(UpdateCarRequest updateCarRequest) throws BusinessException {
-        checkIfCarExist(updateCarRequest.getCarId());
+        checkIfCarExists(updateCarRequest.getCarId());
         Car car = this.modelMapperService.forRequest().map(updateCarRequest, Car.class);
 
         this.carDao.save(car);
@@ -61,9 +57,9 @@ public class CarManager implements CarService {
     }
 
     @Override
-    public Result deleteById(DeleteCarRequest deleteCarRequest) throws BusinessException {
-        checkIfCarExist(deleteCarRequest.getCarId());
-        this.carDao.deleteById(deleteCarRequest.getCarId());
+    public Result deleteById(int id) throws BusinessException {
+        checkIfCarExists(id);
+        this.carDao.deleteById(id);
         return new SuccessResult("Car is deleted.");
     }
 
@@ -74,13 +70,13 @@ public class CarManager implements CarService {
         List<CarListDto> response = result.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
-        return new SuccessDataResult<List<CarListDto>>(response);
+        return new SuccessDataResult<>(response);
     }
 
     @Override
-    public DataResult<List<CarListDto>> getAllSorted(String ascOrDesc) {
+    public DataResult<List<CarListDto>> getAllSorted(String ascOrDesc) throws BusinessException {
         Sort sort;
-        String value = (ascOrDesc.equals("ASC") || ascOrDesc.equals("DESC") ) ? ascOrDesc : "DESC";
+        String value= checkIsAvailable(ascOrDesc);
 
         sort = Sort.by(Sort.Direction.valueOf(value),"dailyPrice");
 
@@ -88,7 +84,7 @@ public class CarManager implements CarService {
         List<CarListDto> response = result.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
-        return new SuccessDataResult<List<CarListDto>>(response);
+        return new SuccessDataResult<>(response);
     }
 
     @Override
@@ -98,17 +94,17 @@ public class CarManager implements CarService {
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
 
-        return new SuccessDataResult<List<CarListDto>>(response, "Cars are listed successfuly.");
+        return new SuccessDataResult<>(response, "Cars are listed successfuly.");
     }
 
     @Override
     public DataResult<CarDto> getById(int carId) throws BusinessException {
-        checkIfCarExist(carId);
+        checkIfCarExists(carId);
         Car car = this.carDao.getById(carId);
 
         CarDto response = this.modelMapperService.forDto().map(car, CarDto.class);
 
-        return new SuccessDataResult<CarDto>(response);
+        return new SuccessDataResult<>(response);
     }
 
     @Override
@@ -118,14 +114,20 @@ public class CarManager implements CarService {
                 .map(car->this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
 
-        return new SuccessDataResult<List<CarListDto>>(response, "Cars are listed by less than " + modelYear);
+        return new SuccessDataResult<>(response, "Cars are listed by less than " + modelYear);
     }
 
-    public boolean checkIfCarExist(int id) throws BusinessException {
-        if(carDao.existsById(id) == false) {
+    public void checkIfCarExists(int id) throws BusinessException {
+        if(!carDao.existsById(id)) {
             throw new BusinessException("Car does not exist by id:" + id);
         }
-        return true;
+    }
+
+    public String checkIsAvailable(String ascOrDesc)throws BusinessException{
+        if(!(ascOrDesc.equals("asc") || ascOrDesc.equals("desc"))){
+            throw new BusinessException("Please select available sort ");
+        }
+       return ascOrDesc.toUpperCase();
     }
 
 }

@@ -16,7 +16,7 @@ public class CarMaintenance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "car_maintenance_id")
     private int carMaintenanceId;
 
     @Column(name = "description")
@@ -25,7 +25,7 @@ public class CarMaintenance {
     @Column(name = "return_date")
     private LocalDate returnDate;
 
-    @ManyToOne(fetch= FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name="car_id")
     private Car car;
 }

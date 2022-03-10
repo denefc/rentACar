@@ -3,18 +3,15 @@ package com.turkcell.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.turkcell.rentACar.business.requests.DeleteColorRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
 import com.turkcell.rentACar.business.abstracts.ColorService;
 import com.turkcell.rentACar.business.dtos.ColorDto;
 import com.turkcell.rentACar.business.dtos.ColorListDto;
-import com.turkcell.rentACar.business.requests.CreateColorRequest;
-import com.turkcell.rentACar.business.requests.UpdateColorRequest;
+import com.turkcell.rentACar.business.requests.createRequests.CreateColorRequest;
+import com.turkcell.rentACar.business.requests.updateRequests.UpdateColorRequest;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
-import com.turkcell.rentACar.core.utilities.results.ErrorDataResult;
-import com.turkcell.rentACar.core.utilities.results.ErrorResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.core.utilities.results.SuccessResult;
@@ -78,9 +75,9 @@ public class ColorManager implements ColorService {
     }
 
     @Override
-    public Result deleteById(DeleteColorRequest deleteColorRequest) throws BusinessException {
-        checkIfColorExist(deleteColorRequest.getColorId());
-        this.colorDao.deleteById(deleteColorRequest.getColorId());
+    public Result deleteById(int id) throws BusinessException {
+        checkIfColorExist(id);
+        this.colorDao.deleteById(id);
         return new SuccessResult("Color is deleted.");
 
     }
