@@ -25,6 +25,8 @@ public class AdditionalService {
     @Column(name = "additional_service_dailyPrice")
     private double dailyPrice;
 
+    //amount konulabilir...
+
     @OneToMany(mappedBy = "additionalService")
     private List<OrderedAdditionalService> orderedAdditionalServices;
 }

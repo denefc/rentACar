@@ -11,12 +11,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RentalDto {
+
     private int rentalId;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
+    private String cityOfPickUpLocation_CityName;
+    private String cityOfReturnLocation_CityName;
+
+    private double totalRentalPrice;
     private int carCarId;
 
     private List<OrderedAdditionalServiceDto> orderedAdditionalServices;
