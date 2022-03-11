@@ -32,4 +32,13 @@ public class Rental {
 
     @OneToMany(mappedBy = "rental")
     private List<OrderedAdditionalService> orderedAdditionalServices;
+
+    @ManyToOne
+    @JoinColumn(name="city_pick_up_id")
+    private City cityOfPickUpLocation;
+
+
+    @ManyToOne
+    @JoinColumn(name="city_return_id")
+    private City cityOfReturnLocation;
 }

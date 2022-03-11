@@ -25,4 +25,12 @@ public class CreateRentalRequest {
     @NotNull
     @Positive
     private int carCarId;
+
+    @NotNull
+    @Positive
+    private int cityOfPickUpLocationId;
+
+    @NotNull
+    @Positive
+    private int cityOfReturnLocationId;
 }

@@ -2,6 +2,7 @@ package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.CarMaintenanceService;
 import com.turkcell.rentACar.business.abstracts.CarService;
+import com.turkcell.rentACar.business.abstracts.OrderedAdditionalServiceService;
 import com.turkcell.rentACar.business.abstracts.RentalService;
 import com.turkcell.rentACar.business.dtos.CarMaintenanceListDto;
 import com.turkcell.rentACar.business.dtos.RentalDto;
@@ -35,10 +36,9 @@ public class RentalManager implements RentalService {
     private final CarMaintenanceService carMaintenanceService;
     private final CarService carService;
 
-    @Autowired
-    public RentalManager(RentalDao rentalDao, ModelMapperService modelMapperService,
-                         @Lazy CarMaintenanceService carMaintenanceService, @Lazy CarService carService) {
 
+    @Autowired
+    public RentalManager(RentalDao rentalDao, ModelMapperService modelMapperService,@Lazy CarMaintenanceService carMaintenanceService,@Lazy CarService carService) {
         this.rentalDao = rentalDao;
         this.modelMapperService = modelMapperService;
         this.carMaintenanceService = carMaintenanceService;
@@ -56,7 +56,7 @@ public class RentalManager implements RentalService {
     @Override
     public Result add(CreateRentalRequest createRentalRequest) throws BusinessException {
 
-        checkIfCarAvailable(createRentalRequest);
+        checkIfCarAvailable(createRentalRequest.getCarCarId(),createRentalRequest.getStartDate());
         checkIfLogicallyCarAvailable(createRentalRequest.getStartDate(),createRentalRequest.getEndDate());
         checkIfCarRented(createRentalRequest.getCarCarId(),createRentalRequest.getStartDate());
         Rental rental = this.modelMapperService.forDto().map(createRentalRequest, Rental.class);
@@ -76,7 +76,7 @@ public class RentalManager implements RentalService {
     @Override
     public Result update(UpdateRentalRequest updateRentalRequest) throws BusinessException {
         checkIfRentalExists(updateRentalRequest.getRentalId());
-        checkIfCarAvailableForUpdate(updateRentalRequest);
+        checkIfCarAvailable(updateRentalRequest.getCarCarId(),updateRentalRequest.getStartDate());
         checkIfCarRented(updateRentalRequest.getCarCarId(),updateRentalRequest.getStartDate());
         checkIfLogicallyCarAvailable(updateRentalRequest.getStartDate(),updateRentalRequest.getEndDate());
         Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
@@ -84,13 +84,13 @@ public class RentalManager implements RentalService {
         return new SuccessResult("Rent updated");
     }
 
-    private void checkIfCarAvailable(CreateRentalRequest createRentalRequest) throws BusinessException {
-        DataResult<List<CarMaintenanceListDto>> result = this.carMaintenanceService.getByCarId(createRentalRequest.getCarCarId());
+    private void checkIfCarAvailable(int carId ,LocalDate startDate) throws BusinessException {
+        DataResult<List<CarMaintenanceListDto>> result = this.carMaintenanceService.getByCarId(carId);
         List<CarMaintenance> response = result.getData().stream().map(carMaintenance -> this.modelMapperService.forDto().map(carMaintenance, CarMaintenance.class)).collect(Collectors.toList());
 
         for(CarMaintenance carMaintenance : response) {
-            //8 11                          //11 Mart
-            if(carMaintenance.getReturnDate() == null || createRentalRequest.getStartDate().isBefore(carMaintenance.getReturnDate())) {
+
+            if(carMaintenance.getReturnDate() == null || startDate.isBefore(carMaintenance.getReturnDate())) {
                 throw new BusinessException("Car is not available!");
             }
         }
@@ -100,18 +100,7 @@ public class RentalManager implements RentalService {
           throw new BusinessException("End date should be after the Start Date ! ");
       }
     }
-    private void checkIfCarAvailableForUpdate(UpdateRentalRequest updateRentalRequest) throws BusinessException {
-        checkIfRentalExists(updateRentalRequest.getRentalId());
-        DataResult<List<CarMaintenanceListDto>> result = this.carMaintenanceService.getByCarId(updateRentalRequest.getCarCarId());
-        List<CarMaintenance> response = result.getData().stream().map(carMaintenance -> this.modelMapperService.forDto().map(carMaintenance, CarMaintenance.class)).collect(Collectors.toList());
 
-
-        for(CarMaintenance carMaintenance : response) {
-            if(carMaintenance.getReturnDate() == null || updateRentalRequest.getStartDate().isBefore(carMaintenance.getReturnDate())) {
-                throw new BusinessException("Car is not available!");
-            }
-        }
-    }
 
     private void checkIfCarRented(int id,LocalDate newStartDate) throws BusinessException{
         this.carService.checkIfCarExists(id);
@@ -149,6 +138,9 @@ public class RentalManager implements RentalService {
             throw new BusinessException("Rental does not exist by id:" + id);
         }
     }
+
+
+
 
 
 

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,4 +18,6 @@ public class RentalDto {
     private LocalDate endDate;
 
     private int carCarId;
+
+    private List<OrderedAdditionalServiceDto> orderedAdditionalServices;
 }
