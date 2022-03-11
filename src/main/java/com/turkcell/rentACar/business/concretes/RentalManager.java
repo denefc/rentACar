@@ -81,6 +81,7 @@ public class RentalManager implements RentalService {
         checkIfLogicallyCarAvailable(updateRentalRequest.getStartDate(),updateRentalRequest.getEndDate());
 
         Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
+        calculateCityDifferences(rental);
         this.rentalDao.save(rental);
         return new SuccessResult("Rent updated");
     }
