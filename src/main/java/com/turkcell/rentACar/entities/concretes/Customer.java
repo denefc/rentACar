@@ -24,14 +24,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="customers")
-@Inheritance(strategy = InheritanceType.JOINED)
-@PrimaryKeyJoinColumn(name = "customer_id", referencedColumnName = "user_id")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@PrimaryKeyJoinColumn(name = "customer_id", referencedColumnName = "user_id")
 public class Customer extends User{
 
-    @Id
+  /*  @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="customer_id")
-    private int customerId;
+    private int customerId;*/
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     private List<Invoice> invoices;

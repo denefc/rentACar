@@ -16,13 +16,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="corporate_customers")
-@PrimaryKeyJoinColumn(name = "corporate_customer_id", referencedColumnName = "customer_id")
+//@PrimaryKeyJoinColumn(name = "corporate_customer_id", referencedColumnName = "customer_id")
 public class CorporateCustomer extends Customer {
 
-    @Id
+   /* @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="corporate_customer_id")
-    private int corporateCustomerId;
+    private int corporateCustomerId;*/
 
     @Column(name="company_name")
     private String companyName;

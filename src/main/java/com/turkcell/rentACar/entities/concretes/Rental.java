@@ -43,4 +43,8 @@ public class Rental {
 
     @Column(name = "total_rental_price")
     private double totalRentalPrice;
+
+    @ManyToOne
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
 }
