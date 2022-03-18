@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.entities.concretes;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -23,17 +24,22 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name="customers")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@PrimaryKeyJoinColumn(name = "customer_id", referencedColumnName = "user_id")
+@PrimaryKeyJoinColumn(name = "customer_id", referencedColumnName = "user_id")
 public class Customer extends User{
 
-  /*  @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="customer_id")
-    private int customerId;*/
+    @Column(name = "customer_id", insertable = false, updatable = false)
+    private int customerId;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @Column(name = "date_registered")
+    private LocalDate dateRegistered;
+
+
+    @OneToMany(mappedBy = "customer")
     private List<Invoice> invoices;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Rental> rentals;
 
 }

@@ -41,10 +41,16 @@ public class Rental {
     @JoinColumn(name="city_return_id")
     private City cityOfReturnLocation;
 
-    @Column(name = "total_rental_price")
-    private double totalRentalPrice;
+    @Column(name = "rent_start_kilometer")
+    private double rentStartKilometer;
 
-    @ManyToOne
-    @JoinColumn(name = "invoice_id")
-    private Invoice invoice;
+    @Column(name = "return_kilometer")
+    private double returnKilometer;
+
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+
 }

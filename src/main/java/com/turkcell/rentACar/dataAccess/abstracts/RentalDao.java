@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface RentalDao extends JpaRepository<Rental,Integer> {
     List<Rental> getAllByCarCarId(int carId);
+    boolean existsByRentalId(int id);
+
 }

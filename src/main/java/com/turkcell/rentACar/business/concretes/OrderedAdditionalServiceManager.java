@@ -1,6 +1,8 @@
 package com.turkcell.rentACar.business.concretes;
 
+import com.turkcell.rentACar.business.abstracts.AdditionalServiceService;
 import com.turkcell.rentACar.business.abstracts.OrderedAdditionalServiceService;
+import com.turkcell.rentACar.business.abstracts.RentalService;
 import com.turkcell.rentACar.business.dtos.OrderedAdditionalServiceDto;
 import com.turkcell.rentACar.business.dtos.OrderedAdditionalServiceListDto;
 import com.turkcell.rentACar.business.requests.createRequests.CreateOrderedAdditionalServiceRequest;
@@ -24,11 +26,15 @@ public class OrderedAdditionalServiceManager implements OrderedAdditionalService
 
     private final OrderedAdditionalServiceDao orderedAdditionalServiceDao;
     private final ModelMapperService modelMapperService;
+    private final RentalService rentalService;
+    private final AdditionalServiceService additionalServiceService;
 
     @Autowired
-    public OrderedAdditionalServiceManager(OrderedAdditionalServiceDao orderedAdditionalServiceDao, ModelMapperService modelMapperService) {
+    public OrderedAdditionalServiceManager(OrderedAdditionalServiceDao orderedAdditionalServiceDao, ModelMapperService modelMapperService, RentalService rentalService, AdditionalServiceService additionalServiceService) {
         this.orderedAdditionalServiceDao = orderedAdditionalServiceDao;
         this.modelMapperService = modelMapperService;
+        this.rentalService = rentalService;
+        this.additionalServiceService = additionalServiceService;
     }
 
     @Override
@@ -46,6 +52,8 @@ public class OrderedAdditionalServiceManager implements OrderedAdditionalService
         OrderedAdditionalService orderedAdditionalService = this.modelMapperService.forRequest().map(createOrderedAdditionalServiceRequest, OrderedAdditionalService.class);
 
         //rent var mı kontrol et
+        additionalServiceService.existsAdditionalServiceByAdditionalServiceId(createOrderedAdditionalServiceRequest.getAdditionalServiceAdditionalServiceId());
+        checkIfRentalServiceExists(createOrderedAdditionalServiceRequest.getRentalId());
         orderedAdditionalService.setOrderedAdditionalServiceId(0);
         this.orderedAdditionalServiceDao.save(orderedAdditionalService);
 
@@ -80,11 +88,24 @@ public class OrderedAdditionalServiceManager implements OrderedAdditionalService
         return new SuccessResult("OrderedAdditionalService is deleted successfully.");
     }
 
+    @Override
+    public boolean existsByOrderedAdditionalServiceId(int id) {
+       if(orderedAdditionalServiceDao.existsByOrderedAdditionalServiceId(id)){
+           return true;
+       }
+        return false;
+    }
 
 
     private void checkIfOrderedAdditionalServiceExists(int id) throws BusinessException {
-        if(!orderedAdditionalServiceDao.existsById(id)) {
+        if(!existsByOrderedAdditionalServiceId(id)) {
             throw new BusinessException("OrderedAdditionalService does not exist by id:" + id);
         }
     }
+    private void checkIfRentalServiceExists(int id) throws BusinessException {
+        if(!rentalService.existsByRentalId(id)) {
+            throw new BusinessException("Rental does not exist by id:" + id);
+        }
+    }
+
 }

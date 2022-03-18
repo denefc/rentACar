@@ -81,6 +81,15 @@ public class AdditionalServiceManager implements AdditionalServiceService {
         return new SuccessResult("AdditionalService is deleted successfully.");
     }
 
+    @Override
+    public boolean existsAdditionalServiceByAdditionalServiceId(int id) {
+        if(additionalServiceDao.existsAdditionalServiceByAdditionalServiceId(id)){
+            return true;
+        }
+        return false;
+    }
+
+
     private void checkIfAdditionalNameIsExists(String additionalName)throws BusinessException {
             for (AdditionalServiceListDto additionalServiceElement : this.getAll().getData()) {
                 if (additionalServiceElement.getAdditionalServiceName().equals(additionalName)) {
@@ -90,7 +99,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
     }
 
     private void checkIfAdditionalServiceExists(int id) throws BusinessException {
-        if(!additionalServiceDao.existsById(id)) {
+        if(!this.existsAdditionalServiceByAdditionalServiceId(id)) {
             throw new BusinessException("AdditionalService does not exist by id:" + id);
         }
     }

@@ -25,4 +25,5 @@ public interface AdditionalServiceService {
     DataResult<AdditionalServicesDto> getById(int id) throws BusinessException;
 
     Result deleteById(int id) throws BusinessException;
+    boolean existsAdditionalServiceByAdditionalServiceId(int id);
 }

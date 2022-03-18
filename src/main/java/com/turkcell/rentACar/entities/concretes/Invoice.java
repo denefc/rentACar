@@ -26,13 +26,17 @@ public class Invoice {
     private LocalDate invoiceDate;
 
     @Column(name="total_payment")
-    private LocalDate totalPayment;
+    private double totalPayment;
+
+    @Column(name = "total_rent_day")
+    private int totalRentDay;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
-    private List<Rental> rentals;
+    @OneToOne()
+    @JoinColumn(name = "rental_id")
+    private Rental rental;
 
 }

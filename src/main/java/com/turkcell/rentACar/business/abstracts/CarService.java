@@ -31,4 +31,5 @@ public interface CarService {
     DataResult<List<CarListDto>> getByModelYearIsLessThanEqual(int modelYear);
 
     void checkIfCarExists(int id) throws BusinessException;
+
 }

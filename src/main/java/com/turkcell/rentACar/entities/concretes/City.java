@@ -19,7 +19,6 @@ public class City {
     @Column(name = "city_id")
     private int cityId;
 
-
     @Column(name = "city_name")
     private String cityName;
 

@@ -26,5 +26,7 @@ public interface OrderedAdditionalServiceService {
 
     Result deleteById(int id) throws BusinessException;
 
+    boolean existsByOrderedAdditionalServiceId(int id);
+
 
 }

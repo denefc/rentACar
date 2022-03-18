@@ -7,6 +7,7 @@ import org.hibernate.annotations.SelectBeforeUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
@@ -33,4 +34,9 @@ public class CreateRentalRequest {
     @NotNull
     @Positive
     private int cityOfReturnLocationId;
+
+    @NotNull
+    @Min(1)
+    private int customerId;
+
 }

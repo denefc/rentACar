@@ -17,13 +17,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="individual_customers")
-//@PrimaryKeyJoinColumn(name = "individual_customer_id", referencedColumnName = "customer_id")
+@PrimaryKeyJoinColumn(name = "individual_customer_id", referencedColumnName = "customer_id")
 public class IndividualCustomer extends Customer {
 
-   /* @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="individual_customer_id")
-    private int individualCustomerId;*/
+
+    @Column(name="individual_customer_id",insertable = false, updatable = false)
+    private int individualCustomerId;
 
     @Column(name="first_name")
     private String firstName;

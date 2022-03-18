@@ -7,6 +7,7 @@ import com.turkcell.rentACar.business.requests.updateRequests.UpdateRentalReques
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
+import com.turkcell.rentACar.entities.concretes.Rental;
 
 import java.util.List;
 
@@ -22,4 +23,10 @@ public interface RentalService {
     Result update(UpdateRentalRequest updateRentalRequest) throws BusinessException;
 
     Result deleteById(int id) throws BusinessException;
+
+    boolean existsByRentalId(int id);
+
+    Rental getRentalById(int id) throws BusinessException;
+
+
 }

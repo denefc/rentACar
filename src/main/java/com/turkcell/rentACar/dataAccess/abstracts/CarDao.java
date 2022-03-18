@@ -12,4 +12,6 @@ public interface CarDao extends JpaRepository<Car, Integer> {
 
     List<Car> getByDailyPriceIsLessThanEqual(double dailyPrice);
     List<Car> getByModelYearIsLessThanEqual(int modelYear);
+    boolean existsByCarId(int id);
+
 }

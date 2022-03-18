@@ -1,8 +1,6 @@
 package com.turkcell.rentACar.business.concretes;
 
-import com.turkcell.rentACar.business.abstracts.CarMaintenanceService;
-import com.turkcell.rentACar.business.abstracts.CarService;
-import com.turkcell.rentACar.business.abstracts.RentalService;
+import com.turkcell.rentACar.business.abstracts.*;
 import com.turkcell.rentACar.business.dtos.CarMaintenanceListDto;
 import com.turkcell.rentACar.business.dtos.RentalDto;
 import com.turkcell.rentACar.business.dtos.RentalListDto;
@@ -28,20 +26,21 @@ import java.util.stream.Collectors;
 @Service
 public class RentalManager implements RentalService {
 
-
-
     private final RentalDao rentalDao;
     private final ModelMapperService modelMapperService;
     private final CarMaintenanceService carMaintenanceService;
     private final CarService carService;
+    private final CorporateCustomerService corporateCustomerService;
 
 
     @Autowired
-    public RentalManager(RentalDao rentalDao, ModelMapperService modelMapperService,@Lazy CarMaintenanceService carMaintenanceService,@Lazy CarService carService) {
+    public RentalManager(RentalDao rentalDao, ModelMapperService modelMapperService, @Lazy CarMaintenanceService carMaintenanceService, @Lazy CarService carService, CorporateCustomerService corporateCustomerService) {
         this.rentalDao = rentalDao;
         this.modelMapperService = modelMapperService;
         this.carMaintenanceService = carMaintenanceService;
         this.carService = carService;
+
+        this.corporateCustomerService = corporateCustomerService;
     }
 
     @Override
@@ -59,7 +58,8 @@ public class RentalManager implements RentalService {
         checkIfLogicallyCarAvailable(createRentalRequest.getStartDate(),createRentalRequest.getEndDate());
         checkIfCarRented(createRentalRequest.getCarCarId(),createRentalRequest.getStartDate());
         Rental rental = this.modelMapperService.forDto().map(createRentalRequest, Rental.class);
-        calculateCityDifferences(rental);
+        rental.setCustomer(corporateCustomerService.getCustomerById(createRentalRequest.getCustomerId()));
+        //farklı city eklencek
         rental.setRentalId(0);
         this.rentalDao.save(rental);
         return new SuccessResult("Rent is added");
@@ -81,7 +81,7 @@ public class RentalManager implements RentalService {
         checkIfLogicallyCarAvailable(updateRentalRequest.getStartDate(),updateRentalRequest.getEndDate());
 
         Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
-        calculateCityDifferences(rental);
+
         this.rentalDao.save(rental);
         return new SuccessResult("Rent updated");
     }
@@ -135,21 +135,25 @@ public class RentalManager implements RentalService {
         return new SuccessResult("Rental is deleted.");
     }
 
+    @Override
+    public boolean existsByRentalId(int id) {
+        return rentalDao.existsByRentalId(id);
+    }
+
+    @Override
+    public Rental getRentalById(int id) throws BusinessException {
+       checkIfRentalExists(id);
+       return rentalDao.getById(id);
+    }
+
+
     private void checkIfRentalExists(int id) throws BusinessException {
         if(!rentalDao.existsById(id)) {
             throw new BusinessException("Rental does not exist by id:" + id);
         }
     }
 
-    private void calculateCityDifferences(Rental rental) {
-        if(rental.getCityOfPickUpLocation()!=rental.getCityOfReturnLocation()) {
-           rental.setTotalRentalPrice(750);
-        }else{
-            rental.setTotalRentalPrice(0);
-        }
-    }
 
-  //calculateTotalDailyPrices
 
 
 
