@@ -30,7 +30,7 @@ public class Rental {
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @OneToMany(mappedBy = "rental")
+    @OneToMany(mappedBy = "rental",cascade = CascadeType.ALL)
     private List<OrderedAdditionalService> orderedAdditionalServices;
 
     @ManyToOne

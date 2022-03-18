@@ -24,8 +24,6 @@ public interface RentalService {
 
     Result deleteById(int id) throws BusinessException;
 
-    boolean existsByRentalId(int id);
-
     Rental getRentalById(int id) throws BusinessException;
 
 

@@ -55,6 +55,7 @@ public class InvoiceManager implements InvoiceService {
     public Result add(CreateInvoiceRequest createInvoiceRequest) throws BusinessException {
         double totalPayment = 0;
         Invoice invoice = this.modelMapperService.forDto().map(createInvoiceRequest, Invoice.class);
+        invoice.setTotalRentDay(daysOfRental(createInvoiceRequest.getRentalId()));
        totalPayment+=differentCityPayment(createInvoiceRequest.getRentalId());
        totalPayment+=daysOfRentalPayment(createInvoiceRequest.getRentalId());
        totalPayment+=orderedAdditionalPayment(createInvoiceRequest.getRentalId());

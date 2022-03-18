@@ -10,14 +10,21 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class RentalListDto {
 
-    private int rentalId;
+    private int rentalCarId;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
-    private String cityOfPickUpLocation_CityName;
-    private String cityOfReturnLocation_CityName;
+    private int cityOfPickUpLocationId;
 
-    private int carCarId;
+    private int cityOfReturnLocationId;
+
+    private double rentStartKilometer;
+
+    private double returnKilometer;
+
+    private CarDto carDto;
+
+
 }

@@ -57,6 +57,7 @@ public class RentalManager implements RentalService {
         checkIfCarAvailable(createRentalRequest.getCarCarId(),createRentalRequest.getStartDate());
         checkIfLogicallyCarAvailable(createRentalRequest.getStartDate(),createRentalRequest.getEndDate());
         checkIfCarRented(createRentalRequest.getCarCarId(),createRentalRequest.getStartDate());
+
         Rental rental = this.modelMapperService.forDto().map(createRentalRequest, Rental.class);
         rental.setCustomer(corporateCustomerService.getCustomerById(createRentalRequest.getCustomerId()));
         //farklı city eklencek
@@ -135,10 +136,6 @@ public class RentalManager implements RentalService {
         return new SuccessResult("Rental is deleted.");
     }
 
-    @Override
-    public boolean existsByRentalId(int id) {
-        return rentalDao.existsByRentalId(id);
-    }
 
     @Override
     public Rental getRentalById(int id) throws BusinessException {

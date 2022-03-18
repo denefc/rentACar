@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.business.requests.createRequests;
 
+import com.sun.istack.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,23 +21,30 @@ public class CreateRentalRequest {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate;
 
+    @Nullable
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate;
 
     @NotNull
-    @Positive
-    private int carCarId;
-
-    @NotNull
-    @Positive
+    @Min(1)
     private int cityOfPickUpLocationId;
 
     @NotNull
-    @Positive
+    @Min(1)
     private int cityOfReturnLocationId;
+
+    @Min(0)
+    private double returnKilometer;
+
+    @NotNull
+    @Min(1)
+    private int carCarId;
 
     @NotNull
     @Min(1)
     private int customerId;
+
+
+
 
 }

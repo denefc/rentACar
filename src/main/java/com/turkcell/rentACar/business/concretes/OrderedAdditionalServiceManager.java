@@ -53,7 +53,7 @@ public class OrderedAdditionalServiceManager implements OrderedAdditionalService
 
         //rent var mı kontrol et
         additionalServiceService.existsAdditionalServiceByAdditionalServiceId(createOrderedAdditionalServiceRequest.getAdditionalServiceAdditionalServiceId());
-        checkIfRentalServiceExists(createOrderedAdditionalServiceRequest.getRentalId());
+        rentalService.getRentalById(createOrderedAdditionalServiceRequest.getRentalId());
         orderedAdditionalService.setOrderedAdditionalServiceId(0);
         this.orderedAdditionalServiceDao.save(orderedAdditionalService);
 
@@ -90,10 +90,7 @@ public class OrderedAdditionalServiceManager implements OrderedAdditionalService
 
     @Override
     public boolean existsByOrderedAdditionalServiceId(int id) {
-       if(orderedAdditionalServiceDao.existsByOrderedAdditionalServiceId(id)){
-           return true;
-       }
-        return false;
+        return orderedAdditionalServiceDao.existsByOrderedAdditionalServiceId(id);
     }
 
 
@@ -102,10 +99,6 @@ public class OrderedAdditionalServiceManager implements OrderedAdditionalService
             throw new BusinessException("OrderedAdditionalService does not exist by id:" + id);
         }
     }
-    private void checkIfRentalServiceExists(int id) throws BusinessException {
-        if(!rentalService.existsByRentalId(id)) {
-            throw new BusinessException("Rental does not exist by id:" + id);
-        }
-    }
+
 
 }
