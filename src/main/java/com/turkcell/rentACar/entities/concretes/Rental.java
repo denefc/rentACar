@@ -52,5 +52,8 @@ public class Rental {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @OneToMany(cascade =CascadeType.DETACH)
+    private List<Invoice> invoices;
+
 
 }

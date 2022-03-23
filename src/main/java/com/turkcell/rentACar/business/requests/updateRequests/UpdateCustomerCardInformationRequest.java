@@ -1,15 +1,13 @@
-package com.turkcell.rentACar.business.dtos;
+package com.turkcell.rentACar.business.requests.updateRequests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentDto {
+public class UpdateCustomerCardInformationRequest {
 
     private String cardNo;
 
@@ -19,8 +17,5 @@ public class PaymentDto {
 
     private String cvv;
 
-    private String paymentDate;
-
-    private double paymentTotal;
+    private int customerId;
 }
-

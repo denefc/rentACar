@@ -10,6 +10,7 @@ import com.turkcell.rentACar.business.requests.updateRequests.UpdateRentalReques
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
+import com.turkcell.rentACar.entities.concretes.Invoice;
 
 import java.util.List;
 
@@ -23,4 +24,7 @@ public interface InvoiceService {
     Result delete(int id) throws BusinessException;
 
     Result update( UpdateInvoiceRequest updateInvoiceRequest) throws BusinessException;
+
+    List<Invoice> getInvoicesByRentalId(int rentalId);
+
 }

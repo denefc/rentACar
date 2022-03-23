@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,11 +94,17 @@ public class InvoiceManager implements InvoiceService {
 
         checkIfInvoiceExist(updateInvoiceRequest.getId());
 
-        invoice.setInvoiceId(0);
-
         this.invoiceDao.save(invoice);
 
         return new SuccessResult("Invoice updated successfully");
+    }
+
+    @Override
+    public List<Invoice> getInvoicesByRentalId(int rentalId) {
+        List<Invoice> invoices=invoiceDao.findInvoicesByRental_RentalId(rentalId);
+        List<Invoice> sortedInvoices =invoices.stream().
+                sorted(Comparator.comparing(Invoice::getInvoiceDate).reversed()).collect(Collectors.toList());
+        return sortedInvoices ;
     }
 
     private double differentCityPayment(int rentalId) throws BusinessException {

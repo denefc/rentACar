@@ -4,13 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentDto {
-
+public class CustomerCardInformationDto {
     private String cardNo;
 
     private String month;
@@ -19,8 +16,6 @@ public class PaymentDto {
 
     private String cvv;
 
-    private String paymentDate;
+    private CustomerDto customerDto;
 
-    private double paymentTotal;
 }
-

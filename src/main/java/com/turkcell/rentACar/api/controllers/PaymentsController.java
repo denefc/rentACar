@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.api.controllers;
 
+import com.turkcell.rentACar.api.models.PaymentModel;
 import com.turkcell.rentACar.business.abstracts.PaymentService;
 import com.turkcell.rentACar.business.dtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.PaymentListDto;
@@ -30,9 +31,10 @@ public class PaymentsController {
     }
 
     @PostMapping("/add")
-    public Result add(@RequestBody CreatePaymentRequest createPaymentRequest) throws BusinessException {
+    public Result add(@RequestBody PaymentModel paymentModel) throws BusinessException {
 
-        return paymentService.add(createPaymentRequest);
+
+        return paymentService.add(paymentModel.getCreatePaymentRequest());
     }
 
     @DeleteMapping("/delete/{id}")

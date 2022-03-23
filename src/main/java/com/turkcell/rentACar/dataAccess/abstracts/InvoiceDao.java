@@ -5,7 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import com.turkcell.rentACar.entities.concretes.Invoice;
 
+import java.util.List;
+
 @Repository
 public interface InvoiceDao extends JpaRepository<Invoice, Integer>{
+
+    List<Invoice> findInvoicesByRental_RentalId(int rentalId);
 
 }

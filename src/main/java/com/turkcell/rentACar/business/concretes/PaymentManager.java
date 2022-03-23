@@ -17,6 +17,8 @@ import com.turkcell.rentACar.entities.concretes.Payment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +51,7 @@ public class PaymentManager implements PaymentService {
     public Result add(CreatePaymentRequest createPaymentRequest) throws BusinessException {
 
         Payment payment = this.modelMapperService.forRequest().map(createPaymentRequest,Payment.class);
-
+        payment.setPaymentDate(Date.from(Instant.now()));
 
         payment.setPaymentId(0);
 
@@ -72,4 +74,6 @@ public class PaymentManager implements PaymentService {
     public Result delete(int id) throws BusinessException {
         return null;
     }
+
+    //hakanın vidyoyu izle
 }
