@@ -33,7 +33,7 @@ public class Payment {
     private String cvv;
 
     @Column(name = "payment_date")
-    private LocalDate paymentDate;
+    private String paymentDate;
 
     @OneToOne
     @JoinColumn(name = "rental_id")

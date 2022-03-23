@@ -1,9 +1,6 @@
 package com.turkcell.rentACar.business.concretes;
 
-import com.turkcell.rentACar.business.abstracts.InvoiceService;
-import com.turkcell.rentACar.business.abstracts.IsbankPosService;
-import com.turkcell.rentACar.business.abstracts.PaymentService;
-import com.turkcell.rentACar.business.abstracts.ZiraatBankPosService;
+import com.turkcell.rentACar.business.abstracts.*;
 import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.PaymentListDto;
@@ -28,16 +25,15 @@ import java.util.stream.Collectors;
 public class PaymentManager implements PaymentService {
     private final PaymentDao paymentDao;
     private final ModelMapperService modelMapperService;
-    private final ZiraatBankPosService ziraatBankPosService;
-    private final IsbankPosService isbankPosService;
+    private final PosService posService;
     private final InvoiceService invoiceService;
 
     @Autowired
-    public PaymentManager(PaymentDao paymentDao, ModelMapperService modelMapperService, ZiraatBankPosService ziraatBankPosService, IsbankPosService isbankPosService, InvoiceService invoiceService) {
+    public PaymentManager(PaymentDao paymentDao, ModelMapperService modelMapperService, PosService posService, InvoiceService invoiceService) {
         this.paymentDao = paymentDao;
         this.modelMapperService = modelMapperService;
-        this.ziraatBankPosService = ziraatBankPosService;
-        this.isbankPosService = isbankPosService;
+        this.posService = posService;
+
         this.invoiceService = invoiceService;
     }
 
@@ -54,7 +50,7 @@ public class PaymentManager implements PaymentService {
 
         Payment payment = this.modelMapperService.forRequest().map(createPaymentRequest,Payment.class);
 
-        payment.setPaymentDate(LocalDate.now());
+
         payment.setPaymentId(0);
 
         this.paymentDao.save(payment);
