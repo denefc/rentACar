@@ -1,8 +1,11 @@
 package com.turkcell.rentACar.business.dtos;
 
+import com.turkcell.rentACar.entities.concretes.Invoice;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,4 +20,6 @@ public class CorporateCustomerListDto {
     private String companyName;
 
     private String taxNumber;
+
+    private List<Invoice> invoices;
 }

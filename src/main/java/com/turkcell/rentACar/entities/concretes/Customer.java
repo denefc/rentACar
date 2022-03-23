@@ -35,7 +35,6 @@ public class Customer extends User{
     @Column(name = "date_registered")
     private LocalDate dateRegistered;
 
-
     @OneToMany(mappedBy = "customer")
     private List<Invoice> invoices;
 

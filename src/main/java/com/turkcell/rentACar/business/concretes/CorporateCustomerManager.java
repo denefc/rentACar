@@ -17,6 +17,7 @@ import com.turkcell.rentACar.entities.concretes.CorporateCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
         CorporateCustomer corporateCustomer = this.modelMapperService.forRequest().map(createCorporateCustomerRequest, CorporateCustomer.class);
         checkIfCompanyNameExists(createCorporateCustomerRequest.getCompanyName());
         checkIfTaxNumberExists(createCorporateCustomerRequest.getTaxNumber());
+        corporateCustomer.setDateRegistered(LocalDate.now());
 
         corporateCustomer.setCustomerId(0);
 
