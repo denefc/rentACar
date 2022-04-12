@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Primary
 public class ZiraatBankPosAdapter implements PosService {
     @Override
-    public Result pos(PosDto posDto) throws BusinessException {
+    public Result makePayment(PosDto posDto) throws BusinessException {
         ZiraatBankManager ziraatBankManager=new ZiraatBankManager();
         boolean result=ziraatBankManager.makePayment(posDto.getCardHolderName(), posDto.getCardNo(),posDto.getCvv());
        if(result){

@@ -1,6 +1,7 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.CityService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.CityDto;
 import com.turkcell.rentACar.business.dtos.CityListDto;
 import com.turkcell.rentACar.business.requests.createRequests.CreateCityRequest;
@@ -39,15 +40,16 @@ public class CityManager implements CityService {
                 .map(city -> this.modelMapperService.forDto().map(city, CityListDto.class))
                 .collect(Collectors.toList());
 
-        return new SuccessDataResult<>(response, "Cities are listed successfully.");
+        return new SuccessDataResult<>(response, BusinessMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
     public Result add(CreateCityRequest createCityRequest) throws BusinessException {
+        checkIfCityNameDuplicate(createCityRequest.getCityName());
         City city = this.modelMapperService.forRequest().map(createCityRequest, City.class);
-        checkIfCityNameIsUnique(createCityRequest.getCityName());
         this.cityDao.save(city);
-        return new SuccessResult("City is added: " + createCityRequest.getCityName());
+
+        return new SuccessResult(BusinessMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
@@ -56,41 +58,38 @@ public class CityManager implements CityService {
         City city = this.cityDao.getById(id);
         CityDto response = this.modelMapperService.forDto().map(city, CityDto.class);
 
-        return new SuccessDataResult<>(response);
+        return new SuccessDataResult<>(response,BusinessMessages.DATA_GET_SUCCESSFULLY);
     }
 
     @Override
     public Result update(UpdateCityRequest updateCityRequest) throws BusinessException {
         checkIfCityExists(updateCityRequest.getCityId());
         City city = this.modelMapperService.forRequest().map(updateCityRequest, City.class);
-        checkIfCityNameIsUnique(updateCityRequest.getCityName());
-
+        checkIfCityNameDuplicate(updateCityRequest.getCityName());
         this.cityDao.save(city);
 
-        return new SuccessResult("City is updated.");
+        return new SuccessResult(BusinessMessages.DATA_UPDATED_SUCCESSFULLY);
     }
 
     @Override
     public Result deleteById(int id) throws BusinessException {
         checkIfCityExists(id);
         this.cityDao.deleteById(id);
-        return new SuccessResult("City is deleted.");
+
+        return new SuccessResult(BusinessMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
-    private void checkIfCityExists(int id) throws BusinessException{
+    @Override
+    public void checkIfCityExists(int id) throws BusinessException{
         if(!cityDao.existsById(id)) {
-            throw new BusinessException("City does not exist by id:" + id);
+            throw new BusinessException(BusinessMessages.CITY_NOT_FOUND + id);
         }
     }
 
-    private void checkIfCityNameIsUnique(String cityName) throws BusinessException {
-
-        for (CityListDto cityElement : this.getAll().getData()) {
-            if (cityElement.getCityName().equalsIgnoreCase(cityName)) {
-                throw new BusinessException("There can not be more than one city with the same name.");
-            }
+    private void checkIfCityNameDuplicate(String cityName) throws BusinessException {
+        if(cityDao.existsByCityName(cityName)) {
+            throw new BusinessException(BusinessMessages.CITY_NAME_ALREADY_EXISTS +cityName);
         }
-
     }
 
 }

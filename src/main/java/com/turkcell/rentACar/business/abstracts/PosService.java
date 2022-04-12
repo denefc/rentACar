@@ -5,5 +5,5 @@ import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.Result;
 
 public interface PosService {
-    Result pos(PosDto posDto) throws BusinessException;
+    Result makePayment(PosDto posDto) throws BusinessException;
 }

@@ -14,7 +14,7 @@ public interface CarService {
 
     DataResult<List<CarListDto>> getAll();
 
-    Result add(CreateCarRequest createCarRequest);
+    Result add(CreateCarRequest createCarRequest) throws BusinessException;
 
     Result update(UpdateCarRequest createCarRequest) throws BusinessException;
 
@@ -29,7 +29,6 @@ public interface CarService {
     DataResult<List<CarListDto>> getByDailyPriceIsLessThanEqual(double dailyPrice);
 
     DataResult<List<CarListDto>> getByModelYearIsLessThanEqual(int modelYear);
-
     void checkIfCarExists(int id) throws BusinessException;
 
 }

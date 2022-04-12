@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.business.abstracts;
 
+import com.turkcell.rentACar.api.models.PaymentModel;
 import com.turkcell.rentACar.business.dtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.PaymentListDto;
 import com.turkcell.rentACar.business.requests.createRequests.CreatePaymentRequest;
@@ -15,7 +16,7 @@ public interface PaymentService {
 
     DataResult<List<PaymentListDto>> getAll() throws BusinessException;
 
-    Result add(CreatePaymentRequest createPaymentRequest) throws BusinessException;
+    Result add(PaymentModel paymentModel) throws BusinessException;
 
     DataResult<PaymentDto> getById(int id) throws BusinessException;
 

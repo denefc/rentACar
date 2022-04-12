@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface InvoiceDao extends JpaRepository<Invoice, Integer>{
 
-    List<Invoice> findInvoicesByRental_RentalId(int rentalId);
+    List<Invoice> findAllByRental_RentalId(int rentalId);
+
+    Invoice findInvoiceByInvoiceNumber(String invoiceNumber);
 
 }

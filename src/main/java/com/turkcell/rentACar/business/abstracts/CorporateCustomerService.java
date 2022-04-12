@@ -25,4 +25,5 @@ public interface CorporateCustomerService {
 
     CorporateCustomer getCustomerById(int id);
 
+    void checkIfCorporateCustomerExists(int id) throws BusinessException;
 }

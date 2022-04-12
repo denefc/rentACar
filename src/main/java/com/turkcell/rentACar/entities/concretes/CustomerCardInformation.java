@@ -21,11 +21,14 @@ public class CustomerCardInformation {
     @Column(name = "card_no")
     private String cardNo;
 
-    @Column(name = "month")
-    private String month;
+    @Column(name = "card_holder")
+    private String cardHolder;
 
-    @Column(name = "year")
-    private String year;
+    @Column(name = "expire_month")
+    private String expirationMonth;
+
+    @Column(name = "expire_year")
+    private String expirationYear;
 
     @Column(name = "cvv")
     private String cvv;

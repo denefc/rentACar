@@ -23,8 +23,6 @@ public interface InvoiceService {
 
     Result delete(int id) throws BusinessException;
 
-    Result update( UpdateInvoiceRequest updateInvoiceRequest) throws BusinessException;
-
-    List<Invoice> getInvoicesByRentalId(int rentalId);
+    DataResult<List<InvoiceListDto>> getInvoicesByRentalId(int rentalId);
 
 }

@@ -29,20 +29,22 @@ public class OrderedAdditionalServicesController {
         this.orderedAdditionalServiceService = orderedAdditionalServiceService;
     }
 
-    @GetMapping("/getall")
+    @GetMapping("/get-all")
     public DataResult<List<OrderedAdditionalServiceListDto>> getAll() {
         return this.orderedAdditionalServiceService.getAll();
     }
 
-    @PostMapping("/add")
-    public Result add(@RequestBody CreateOrderedAdditionalServiceRequest createOrderedAdditionalServiceRequest) throws BusinessException {
-
-        return this.orderedAdditionalServiceService.add(createOrderedAdditionalServiceRequest);
-    }
-
-    @GetMapping("/getbyid/{id}")
+    @GetMapping("/get-by-id/{id}")
     public DataResult<OrderedAdditionalServiceDto> getById(@RequestParam(required = true) int id) throws BusinessException {
         return this.orderedAdditionalServiceService.getById(id);
+    }
+    @GetMapping("/getByRentedCarId/{rentedCarId}")
+    public DataResult<List<OrderedAdditionalServiceListDto>> getByRentalId(@RequestParam int rentalId)throws BusinessException{
+        return this.orderedAdditionalServiceService.getByRentalId(rentalId);
+    }
+    @PostMapping("/add")
+    public Result add(@RequestBody CreateOrderedAdditionalServiceRequest createOrderedAdditionalServiceRequest) throws BusinessException {
+        return this.orderedAdditionalServiceService.add(createOrderedAdditionalServiceRequest);
     }
 
     @PutMapping("/update")
@@ -52,7 +54,6 @@ public class OrderedAdditionalServicesController {
 
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@RequestParam int id) throws BusinessException {
-
         return this.orderedAdditionalServiceService.deleteById(id);
     }
 

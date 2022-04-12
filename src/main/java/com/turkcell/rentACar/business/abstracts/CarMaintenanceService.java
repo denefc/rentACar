@@ -12,9 +12,14 @@ import java.util.List;
 
 public interface CarMaintenanceService {
     DataResult<List<CarMaintenanceListDto>> getAll();
+
     Result add(CreateCarMaintenanceRequest createCarMaintenanceRequest) throws BusinessException;
+
     Result update(UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException;
+
     DataResult<CarMaintenanceDto> getById(int carMaintenanceId) throws BusinessException;
+
     Result deleteById(int id) throws BusinessException;
+
     DataResult<List<CarMaintenanceListDto>> getByCarId(int carId) throws BusinessException;
 }

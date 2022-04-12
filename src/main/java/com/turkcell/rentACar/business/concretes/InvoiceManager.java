@@ -1,8 +1,10 @@
 package com.turkcell.rentACar.business.concretes;
 
+import com.turkcell.rentACar.business.abstracts.CarService;
 import com.turkcell.rentACar.business.abstracts.InvoiceService;
 import com.turkcell.rentACar.business.abstracts.RentalService;
 
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.InvoiceDto;
 import com.turkcell.rentACar.business.dtos.InvoiceListDto;
 
@@ -22,10 +24,10 @@ import com.turkcell.rentACar.entities.concretes.Rental;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,12 +36,14 @@ public class InvoiceManager implements InvoiceService {
     private final InvoiceDao invoiceDao;
     private final ModelMapperService modelMapperService;
     private final RentalService rentalService;
+    private final CarService carService;
 
     @Autowired
-    public InvoiceManager(InvoiceDao invoiceDao, ModelMapperService modelMapperService, RentalService rentalService) {
+    public InvoiceManager(InvoiceDao invoiceDao, ModelMapperService modelMapperService, RentalService rentalService, CarService carService) {
         this.invoiceDao = invoiceDao;
         this.modelMapperService = modelMapperService;
         this.rentalService = rentalService;
+        this.carService = carService;
     }
 
     @Override
@@ -49,68 +53,67 @@ public class InvoiceManager implements InvoiceService {
                 .map(invoice->this.modelMapperService.forDto().map(invoice,InvoiceListDto.class)).collect(Collectors.toList());
 
 
-        return new SuccessDataResult<>(response,"Invoices listed");
+        return new SuccessDataResult<>(response, BusinessMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
     public Result add(CreateInvoiceRequest createInvoiceRequest) throws BusinessException {
-        double totalPayment = 0;
-        Invoice invoice = this.modelMapperService.forDto().map(createInvoiceRequest, Invoice.class);
-        invoice.setTotalRentDay(daysOfRental(createInvoiceRequest.getRentalId()));
-       totalPayment+=differentCityPayment(createInvoiceRequest.getRentalId());
-       totalPayment+=daysOfRentalPayment(createInvoiceRequest.getRentalId());
-       totalPayment+=orderedAdditionalPayment(createInvoiceRequest.getRentalId());
-
-       invoice.setInvoiceDate( LocalDate.now());
-
-        invoice.setTotalPayment(totalPayment);
+        rentalService.checkIfRentalExists(createInvoiceRequest.getRentalId());
+        Rental rental=rentalService.getRentalById(createInvoiceRequest.getRentalId());
+        Invoice invoice = this.modelMapperService.forRequest().map(createInvoiceRequest, Invoice.class);
+        invoice.setRentDay(daysOfRental(rental.getRentalId()));
+        invoice.setTotalPayment(totalPrice(createInvoiceRequest.getRentalId()));
+        invoice.setInvoiceNumber(UUID.randomUUID().toString());
 
         invoice.setInvoiceId(0);
-        this.invoiceDao.save(invoice);
-        return new SuccessResult("Invoice is created");
+        invoiceDao.save(invoice);
+
+        return new SuccessResult(BusinessMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
     public DataResult<InvoiceDto> getById(int id) throws BusinessException {
-
         checkIfInvoiceExist(id);
         Invoice invoice = this.invoiceDao.getById(id);
-
         InvoiceDto response = this.modelMapperService.forDto().map(invoice, InvoiceDto.class);
 
-        return new SuccessDataResult<>(response);
+        return new SuccessDataResult<>(response,BusinessMessages.DATA_GET_SUCCESSFULLY);
     }
 
     @Override
     public Result delete(int id) throws BusinessException {
         checkIfInvoiceExist(id);
         this.invoiceDao.deleteById(id);
-        return new SuccessResult("Deleted successfully");
+        return new SuccessResult(BusinessMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
-    public Result update( UpdateInvoiceRequest updateInvoiceRequest) throws BusinessException {
-        Invoice invoice = this.modelMapperService.forRequest().map(updateInvoiceRequest, Invoice.class);
+    public DataResult<List<InvoiceListDto>> getInvoicesByRentalId(int rentalId) {
+        List<Invoice> invoices = this.invoiceDao.findAllByRental_RentalId(rentalId);
 
-        checkIfInvoiceExist(updateInvoiceRequest.getId());
+        List<InvoiceListDto> invoiceListDtos = invoices.stream()
+                .map(invoice -> this.modelMapperService.forDto().map(invoice, InvoiceListDto.class))
+                .collect(Collectors.toList());
 
-        this.invoiceDao.save(invoice);
-
-        return new SuccessResult("Invoice updated successfully");
+        return new SuccessDataResult<>(invoiceListDtos, BusinessMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
-    @Override
-    public List<Invoice> getInvoicesByRentalId(int rentalId) {
-        List<Invoice> invoices=invoiceDao.findInvoicesByRental_RentalId(rentalId);
-        List<Invoice> sortedInvoices =invoices.stream().
-                sorted(Comparator.comparing(Invoice::getInvoiceDate).reversed()).collect(Collectors.toList());
-        return sortedInvoices ;
+
+
+    private double totalPrice(int rentalId) throws BusinessException {
+        Rental rental=rentalService.getRentalById(rentalId);
+        int days=daysOfRental(rentalId);
+        double diffCityPayment=differentCityPayment(rentalId);
+        double dailyCarPrice=carService.getById(rental.getCar().getCarId()).getData().getDailyPrice()*days;
+        double additionalServiceDailyPrice=orderedAdditionalPayment(rentalId);
+
+        return diffCityPayment+dailyCarPrice+additionalServiceDailyPrice;
     }
 
     private double differentCityPayment(int rentalId) throws BusinessException {
         Rental rental=rentalService.getRentalById(rentalId);
 
-        if(rental.getCityOfPickUpLocation().getCityId()!=rental.getCityOfPickUpLocation().getCityId()){
+        if(rental.getCityOfPickUpLocation().getCityId()!=rental.getCityOfReturnLocation().getCityId()){
             return 750;
         }
         return 0;
@@ -125,10 +128,10 @@ public class InvoiceManager implements InvoiceService {
     }
     private double orderedAdditionalPayment(int rentalId)throws BusinessException{
         Rental rental=rentalService.getRentalById(rentalId);
-        int daysOfRental=daysOfRental(rentalId);
+        int days=daysOfRental(rentalId);
         double totalAdditionalPayment=0;
         for (OrderedAdditionalService orderedItems:rental.getOrderedAdditionalServices()){
-            totalAdditionalPayment+=orderedItems.getAdditionalService().getDailyPrice()*daysOfRental;
+            totalAdditionalPayment+=orderedItems.getAdditionalService().getDailyPrice()*days;
         }
         return totalAdditionalPayment;
 
@@ -139,6 +142,8 @@ public class InvoiceManager implements InvoiceService {
         Rental rental=rentalService.getRentalById(rentalId);
         return (int) ChronoUnit.DAYS.between(rental.getStartDate(),rental.getEndDate()) + 1;
     }
+
+
 
     private void checkIfInvoiceExist(int id) throws BusinessException {
         if(!this.invoiceDao.existsById(id)){

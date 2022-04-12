@@ -16,9 +16,9 @@ public interface CarDamageService {
 
     Result add(CreateCarDamageRequest createCarDamage) throws BusinessException;
 
-    DataResult<CarDamageDto> getById(int id);
+    DataResult<CarDamageDto> getById(int id) throws BusinessException;
 
-    Result delete(int id);
+    Result delete(int id) throws BusinessException;
 
     Result update(UpdateCarDamageRequest updateCarDamageRequest) throws BusinessException;
 }

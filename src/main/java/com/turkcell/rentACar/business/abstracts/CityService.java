@@ -20,4 +20,6 @@ public interface CityService {
     Result update(UpdateCityRequest updateCityRequest) throws BusinessException;
 
     Result deleteById(int id) throws BusinessException;
+
+    void checkIfCityExists(int id) throws BusinessException;
 }

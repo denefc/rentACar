@@ -24,7 +24,6 @@ public class Color {
     @Column(name = "name")
     private String colorName;
 
-
     @OneToMany(mappedBy = "color")
     private List<Car> cars;
 

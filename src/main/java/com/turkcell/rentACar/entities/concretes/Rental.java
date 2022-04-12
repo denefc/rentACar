@@ -27,13 +27,6 @@ public class Rental {
     private LocalDate endDate;
 
     @ManyToOne
-    @JoinColumn(name = "car_id")
-    private Car car;
-
-    @OneToMany(mappedBy = "rental",cascade = CascadeType.ALL)
-    private List<OrderedAdditionalService> orderedAdditionalServices;
-
-    @ManyToOne
     @JoinColumn(name="city_pick_up_id")
     private City cityOfPickUpLocation;
 
@@ -47,13 +40,19 @@ public class Rental {
     @Column(name = "return_kilometer")
     private double returnKilometer;
 
+    @ManyToOne
+    @JoinColumn(name = "car_id")
+    private Car car;
+
+    @OneToMany(mappedBy = "rental",cascade = CascadeType.ALL)
+    private List<OrderedAdditionalService> orderedAdditionalServices;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToMany(cascade =CascadeType.DETACH)
-    private List<Invoice> invoices;
+    @OneToMany(mappedBy = "customer")
+    private List<Payment> payments;
 
 
 }

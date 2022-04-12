@@ -23,5 +23,7 @@ public interface BrandService {
 
     Result deleteById(int id) throws BusinessException;
 
+    void checkIfBrandExists(int id) throws BusinessException;
+
 
 }

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CustomerCardInformationDao extends JpaRepository<CustomerCardInformation,Integer> {
+    boolean existsByCardNo(String cardNo);
 }

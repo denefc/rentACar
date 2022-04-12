@@ -38,7 +38,7 @@ public class IndividualCustomersController {
     }
 
     @PutMapping("/update")
-    public Result update(@RequestBody @Valid UpdateIndividualCustomerRequest updateIndividualCustomerRequest) {
+    public Result update(@RequestBody @Valid UpdateIndividualCustomerRequest updateIndividualCustomerRequest) throws BusinessException {
         return this.individualCustomerService.update(updateIndividualCustomerRequest);
     }
 

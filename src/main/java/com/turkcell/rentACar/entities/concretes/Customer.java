@@ -20,17 +20,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Entity
-@AllArgsConstructor
+@Data
+@Table(name="customers")
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name="customers")
-@PrimaryKeyJoinColumn(name = "customer_id", referencedColumnName = "user_id")
+@PrimaryKeyJoinColumn(name="customer_id",referencedColumnName = "user_id")
 public class Customer extends User{
-
-    @Column(name = "customer_id", insertable = false, updatable = false)
-    private int customerId;
 
     @Column(name = "date_registered")
     private LocalDate dateRegistered;

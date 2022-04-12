@@ -22,10 +22,29 @@ public class Payment {
     @Column(name = "payment_id")
     private int paymentId;
 
-    @Column(name = "payment_date")
-    private Date paymentDate;
+    @Column(name = "card_no")
+    private String cardNo;
 
-    @OneToOne
+    @Column(name = "card_holder")
+    private String cardHolder;
+
+    @Column(name = "expiration_month")
+    private int expirationMonth;
+
+    @Column(name = "expiration_year")
+    private int expirationYear;
+
+    @Column(name = "cvv")
+    private int cvv;
+
+    @Column(name = "payment_amount")
+    private double paymentAmount;
+
+
+   /* @Column(name = "payment_date")
+    private Date paymentDate;*/
+
+    @ManyToOne
     @JoinColumn(name = "rental_id")
     private Rental rental;
 

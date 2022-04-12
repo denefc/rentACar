@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Data
@@ -25,18 +26,27 @@ public class Invoice {
     @Column(name="invoice_date")
     private LocalDate invoiceDate;
 
+    @Column(name = "additional_service_total_payment")
+    private double additionalServiceTotalPayment;
+
+    @Column(name = "rent_day")
+    private int rentDay;
+
+    @Column(name = "rent_payment")
+    private double rentPayment;
+
+    @Column(name = "rent_location_payment")
+    private double rentLocationPayment;
+
     @Column(name="total_payment")
     private double totalPayment;
-
-    @Column(name = "total_rent_day")
-    private int totalRentDay;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
 
     @ManyToOne()
     @JoinColumn(name = "rental_id")
     private Rental rental;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
 }

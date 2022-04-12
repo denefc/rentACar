@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaymentDao extends JpaRepository<Payment, Integer> {
-    boolean existsByRentalId(int id);
 }

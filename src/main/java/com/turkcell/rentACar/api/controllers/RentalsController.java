@@ -3,7 +3,10 @@ package com.turkcell.rentACar.api.controllers;
 import com.turkcell.rentACar.business.abstracts.RentalService;
 import com.turkcell.rentACar.business.dtos.RentalDto;
 import com.turkcell.rentACar.business.dtos.RentalListDto;
+import com.turkcell.rentACar.business.requests.createRequests.CreateCorporateCustomerRequest;
 import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequest;
+import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForCorporateCustomer;
+import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForIndividualCustomer;
 import com.turkcell.rentACar.business.requests.updateRequests.UpdateRentalRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
@@ -25,38 +28,39 @@ public class RentalsController {
         this.rentalService = rentalService;
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
    public DataResult<List<RentalListDto>> getAll(){
         return this.rentalService.getAll();
 
     }
 
-    @GetMapping("/getAllByCarId")
-    public DataResult<List<RentalListDto>> getAllByCarCarId(int id) throws BusinessException{
+    @GetMapping("/get-all-by-car-id")
+    public DataResult<List<RentalListDto>> getAllByCarCarId(@RequestParam int id) throws BusinessException{
         return this.rentalService.getAllByCarCarId(id);
 
     }
 
-    @PostMapping("/add")
-    public Result add(@Valid @RequestBody CreateRentalRequest createRentalRequest) throws BusinessException{
-        return this.rentalService.add(createRentalRequest);
-
+    @PostMapping("/add-rental-corporate-customer")
+    public Result addCorporateCustomerRental(@Valid @RequestBody CreateRentalRequestForCorporateCustomer createRentalRequestForCorporateCustomer) throws BusinessException{
+        return this.rentalService.addForCorporateCustomer(createRentalRequestForCorporateCustomer);
+    }
+    @PostMapping("/add-rental-individual-customer")
+    public Result add(@Valid @RequestBody CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomer) throws BusinessException{
+        return this.rentalService.addForIndividualCustomer(createRentalRequestForIndividualCustomer);
     }
 
-    @GetMapping("/getById")
+    @GetMapping("/get-by-id")
     public DataResult<RentalDto> getById(int id) throws BusinessException{
         return this.rentalService.getById(id);
-
     }
 
     @PutMapping("/update")
-    public Result update(@RequestBody UpdateRentalRequest updateRentalRequest) throws BusinessException {
+    public Result update(@RequestBody @Valid UpdateRentalRequest updateRentalRequest) throws BusinessException {
         return this.rentalService.update(updateRentalRequest);
-
     }
 
     @DeleteMapping("/delete/{id}")
-    public Result deleteById(@RequestParam int id)  throws BusinessException {
+    public Result delete(@RequestParam int id)  throws BusinessException {
         return this.rentalService.deleteById(id);
     }
 }

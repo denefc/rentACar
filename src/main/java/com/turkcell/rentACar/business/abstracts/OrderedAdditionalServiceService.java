@@ -11,6 +11,7 @@ import com.turkcell.rentACar.business.requests.updateRequests.UpdateOrderedAddit
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
+import com.turkcell.rentACar.entities.concretes.OrderedAdditionalService;
 
 import java.util.List;
 
@@ -23,10 +24,15 @@ public interface OrderedAdditionalServiceService {
     Result update(UpdateOrderedAdditionalServiceRequest updateOrderedAdditionalServiceRequest) throws BusinessException;
 
     DataResult<OrderedAdditionalServiceDto> getById(int id) throws BusinessException;
+    DataResult<List<OrderedAdditionalServiceListDto>> getByRentalId(int rentalId) throws BusinessException;
 
     Result deleteById(int id) throws BusinessException;
 
-    boolean existsByOrderedAdditionalServiceId(int id);
+    void checkIfOrderedAdditionalServiceExists(int id) throws BusinessException;
+
+    List<OrderedAdditionalService> getOrderedAdditionalServicesByRentalId(int rentalId) throws BusinessException;
+
+    void orderAdditionalServices(List<Integer> additonalServices, int rentalId) throws BusinessException;
 
 
 }

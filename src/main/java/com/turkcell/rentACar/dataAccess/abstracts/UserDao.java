@@ -7,5 +7,5 @@ import com.turkcell.rentACar.entities.concretes.User;
 
 @Repository
 public interface UserDao extends JpaRepository<User, Integer> {
-
+    boolean existsByEmail(String email);
 }

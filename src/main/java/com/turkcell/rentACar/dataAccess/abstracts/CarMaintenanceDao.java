@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface CarMaintenanceDao extends JpaRepository<CarMaintenance,Integer> {
-    List<CarMaintenance> getAllByCarCarId(int id);
+    List<CarMaintenance> getAllByCar_CarId(int carId);
 
 }

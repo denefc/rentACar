@@ -6,6 +6,6 @@ import com.turkcell.rentACar.entities.concretes.Color;
 
 @Repository
 public interface ColorDao extends JpaRepository<Color, Integer> {
-
+    boolean existsByColorName(String colorName);
 
 }

@@ -10,7 +10,7 @@ import javax.validation.constraints.Positive;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateCarDamageRequest {
-
+    private int carDamageId;
     private String description;
     @Positive
     private int carId;

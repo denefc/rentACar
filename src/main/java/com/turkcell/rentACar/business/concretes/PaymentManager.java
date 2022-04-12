@@ -1,10 +1,11 @@
 package com.turkcell.rentACar.business.concretes;
 
+import com.turkcell.rentACar.api.models.PaymentModel;
 import com.turkcell.rentACar.business.abstracts.*;
 import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.PaymentListDto;
-import com.turkcell.rentACar.business.requests.createRequests.CreatePaymentRequest;
+import com.turkcell.rentACar.business.requests.createRequests.CreateInvoiceRequest;
 import com.turkcell.rentACar.business.requests.updateRequests.UpdatePaymentRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
@@ -13,13 +14,12 @@ import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.PaymentDao;
+import com.turkcell.rentACar.entities.concretes.Invoice;
 import com.turkcell.rentACar.entities.concretes.Payment;
+import com.turkcell.rentACar.entities.concretes.Rental;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,14 +29,16 @@ public class PaymentManager implements PaymentService {
     private final ModelMapperService modelMapperService;
     private final PosService posService;
     private final InvoiceService invoiceService;
+    private final RentalService rentalService;
 
     @Autowired
-    public PaymentManager(PaymentDao paymentDao, ModelMapperService modelMapperService, PosService posService, InvoiceService invoiceService) {
+    public PaymentManager(PaymentDao paymentDao, ModelMapperService modelMapperService, PosService posService, InvoiceService invoiceService, RentalService rentalService) {
         this.paymentDao = paymentDao;
         this.modelMapperService = modelMapperService;
         this.posService = posService;
 
         this.invoiceService = invoiceService;
+        this.rentalService = rentalService;
     }
 
     @Override
@@ -44,19 +46,13 @@ public class PaymentManager implements PaymentService {
         List<Payment> payments = paymentDao.findAll();
         List<PaymentListDto> paymentListDtos = payments.stream()
                 .map(payment -> modelMapperService.forDto().map(payment, PaymentListDto.class)).collect(Collectors.toList());
-        return new SuccessDataResult<>(paymentListDtos, BusinessMessages.PAYMENT_SUCCEED);
+        return new SuccessDataResult<>(paymentListDtos, BusinessMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
-    public Result add(CreatePaymentRequest createPaymentRequest) throws BusinessException {
+    public Result add(PaymentModel paymentModel) throws BusinessException {
 
-        Payment payment = this.modelMapperService.forRequest().map(createPaymentRequest,Payment.class);
-        payment.setPaymentDate(Date.from(Instant.now()));
-
-        payment.setPaymentId(0);
-
-        this.paymentDao.save(payment);
-
+        //
         return new SuccessResult();
     }
 
@@ -76,4 +72,7 @@ public class PaymentManager implements PaymentService {
     }
 
     //hakanın vidyoyu izle
+
+
+
 }

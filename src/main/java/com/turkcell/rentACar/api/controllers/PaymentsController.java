@@ -11,6 +11,7 @@ import com.turkcell.rentACar.core.utilities.results.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -30,11 +31,10 @@ public class PaymentsController {
         return paymentService.getAll();
     }
 
-    @PostMapping("/add")
-    public Result add(@RequestBody PaymentModel paymentModel) throws BusinessException {
-
-
-        return paymentService.add(paymentModel.getCreatePaymentRequest());
+    @PostMapping("/payment-individual-customer")
+    public Result paymentForIndividualCustomer(@RequestBody @Valid PaymentModel paymentModel) throws BusinessException {
+       // return this.paymentService.paymentForIndividualCustomer(paymentModel);
+        return null;
     }
 
     @DeleteMapping("/delete/{id}")

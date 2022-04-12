@@ -25,8 +25,6 @@ public class AdditionalService {
     @Column(name = "additional_service_dailyPrice")
     private double dailyPrice;
 
-    //amount konulabilir...
-
-    @OneToMany(mappedBy = "additionalService")
+    @OneToMany(mappedBy = "additionalService",cascade = CascadeType.ALL)
     private List<OrderedAdditionalService> orderedAdditionalServices;
 }

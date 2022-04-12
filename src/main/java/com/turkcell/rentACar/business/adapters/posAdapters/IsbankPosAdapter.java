@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class IsbankPosAdapter implements PosService {
     @Override
-    public Result pos(PosDto posDto) throws BusinessException {
+    public Result makePayment(PosDto posDto) throws BusinessException {
         IsbankManager isbankManager=new IsbankManager();
         boolean result=isbankManager.makePayment(posDto.getCardHolderName(), posDto.getCardNo(),posDto.getCvv());
         if(result){
