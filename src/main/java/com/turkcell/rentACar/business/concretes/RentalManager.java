@@ -21,6 +21,8 @@ import com.turkcell.rentACar.entities.concretes.CarMaintenance;
 import com.turkcell.rentACar.entities.concretes.Rental;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -82,14 +84,15 @@ public class RentalManager implements RentalService {
 
         Rental rental = this.modelMapperService.forDto().map(createRentalRequestForIndividualCustomer, Rental.class);
 
-        rental.setRentalId(0);
 
-        rentalDao.saveAndFlush(rental);
 
         rental.setOrderedAdditionalServices(orderedAdditionalServiceService.getOrderedAdditionalServicesByRentalId(rental.getRentalId()));
         orderedAdditionalServiceService.orderAdditionalServices(createRentalRequestForIndividualCustomer.getAdditionalServicesId(), rental.getRentalId());
         rental.setCustomer(customerService.getCustomerById(createRentalRequestForIndividualCustomer.getIndividualCustomerId()));
         rental.setRentStartKilometer(this.carService.getById(createRentalRequestForIndividualCustomer.getCar_CarId()).getData().getKilometerInformation());
+        checkIfKilometerIsValid(rental);
+
+        rental.setRentalId(0);
 
         this.rentalDao.save(rental);
         return new SuccessDataResult<>(rental,BusinessMessages.DATA_ADDED_SUCCESSFULLY);
@@ -106,13 +109,13 @@ public class RentalManager implements RentalService {
         checkIfCarRented(createRentalRequestForCorporateCustomer.getCar_CarId(),createRentalRequestForCorporateCustomer.getStartDate());
         Rental rental = this.modelMapperService.forDto().map(createRentalRequestForCorporateCustomer, Rental.class);
 
-        rental.setRentalId(0);
 
-        rentalDao.saveAndFlush(rental);
         rental.setOrderedAdditionalServices(orderedAdditionalServiceService.getOrderedAdditionalServicesByRentalId(rental.getRentalId()));
         orderedAdditionalServiceService.orderAdditionalServices(createRentalRequestForCorporateCustomer.getAdditionalServicesId(), rental.getRentalId());
         rental.setCustomer(customerService.getCustomerById(createRentalRequestForCorporateCustomer.getCorporateCustomerId()));
         rental.setRentStartKilometer(this.carService.getById(createRentalRequestForCorporateCustomer.getCar_CarId()).getData().getKilometerInformation());
+        checkIfKilometerIsValid(rental);
+        rental.setRentalId(0);
 
         this.rentalDao.save(rental);
         return new SuccessDataResult<>(rental,BusinessMessages.DATA_ADDED_SUCCESSFULLY);
@@ -127,6 +130,7 @@ public class RentalManager implements RentalService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
     public Result update(UpdateRentalRequest updateRentalRequest) throws BusinessException {
         checkIfRentalExists(updateRentalRequest.getRentalId());
         checkIfCarAvailable(updateRentalRequest.getCarCarId(),updateRentalRequest.getStartDate());
@@ -145,10 +149,8 @@ public class RentalManager implements RentalService {
         List<Rental> result = this.rentalDao.getAllByCar_CarId(id);
         List<RentalListDto> response = result.stream().map(rent -> this.modelMapperService.forDto().map(rent, RentalListDto.class))
                 .collect(Collectors.toList());
-        return new SuccessDataResult<>(response,"Car's rent info listed");
+        return new SuccessDataResult<>(response,BusinessMessages.DATA_LISTED_SUCCESSFULLY);
     }
-
-
 
 
 
@@ -156,7 +158,7 @@ public class RentalManager implements RentalService {
     public Result deleteById(int id) throws BusinessException {
         checkIfRentalExists(id);
         this.rentalDao.deleteById(id);
-        return new SuccessResult("Rental is deleted.");
+        return new SuccessResult(BusinessMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
 
@@ -222,6 +224,12 @@ public class RentalManager implements RentalService {
             }
         }
 
+    }
+    private void checkIfKilometerIsValid(Rental rental) throws BusinessException {
+
+        if (rental.getRentStartKilometer() > rental.getReturnKilometer()) {
+            throw new BusinessException(BusinessMessages.RETURN_KILOMETER_NOT_VALID_FOR_CAR + rental.getCar().getCarId());
+        }
     }
 
 

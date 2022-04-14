@@ -48,7 +48,4 @@ public class UpdateRentalRequest {
     private int customerId;
 
 
-
-
-
 }
