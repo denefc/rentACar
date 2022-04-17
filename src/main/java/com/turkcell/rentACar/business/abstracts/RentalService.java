@@ -4,8 +4,7 @@ import com.turkcell.rentACar.business.dtos.RentReturnDto;
 import com.turkcell.rentACar.business.dtos.RentalDto;
 import com.turkcell.rentACar.business.dtos.RentalListDto;
 import com.turkcell.rentACar.business.requests.createRequests.CreateCarReturnRequest;
-import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequest;
-import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForCorporateCustomer;
+import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForCorporateCustomerRequest;
 import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForIndividualCustomer;
 import com.turkcell.rentACar.business.requests.updateRequests.UpdateRentalRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
@@ -22,9 +21,9 @@ public interface RentalService {
 
     DataResult<List<RentalListDto>> getAllByCarCarId(int id) throws BusinessException;
 
-    DataResult<Rental> addForIndividualCustomer(CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomer) throws BusinessException;
+    int addForIndividualCustomer(CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomer) throws BusinessException;
 
-    DataResult<Rental> addForCorporateCustomer(CreateRentalRequestForCorporateCustomer createRentalRequestForCorporateCustomer) throws BusinessException;
+    DataResult<Rental> addForCorporateCustomer(CreateRentalRequestForCorporateCustomerRequest createRentalRequestForCorporateCustomer) throws BusinessException;
 
     DataResult<RentalDto> getById(int id) throws BusinessException;
 

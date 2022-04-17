@@ -48,7 +48,7 @@ public class Payment {
     @JoinColumn(name = "rental_id")
     private Rental rental;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 

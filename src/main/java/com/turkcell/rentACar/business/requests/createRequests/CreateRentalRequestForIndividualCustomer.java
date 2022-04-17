@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,11 +15,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateRentalRequestForIndividualCustomer {
+
     @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE,pattern = "dd-MM-yyyy")
     private LocalDate startDate;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Nullable
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE,pattern = "dd-MM-yyyy")
     private LocalDate endDate;
 
     @NotNull
@@ -32,12 +33,10 @@ public class CreateRentalRequestForIndividualCustomer {
     private int individualCustomerId;
 
     @NotNull
-    @PositiveOrZero
-    private int pickUpLocationIdCityId;
+    private int cityOfPickUpLocation_CityId;
 
     @NotNull
-    @PositiveOrZero
-    private int returnLocationIdCityId;
+    private int cityOfReturnLocation_CityId;
 
     @Nullable
     private List<Integer> additionalServicesId;

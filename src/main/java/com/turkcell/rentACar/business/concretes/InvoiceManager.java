@@ -57,7 +57,7 @@ public class InvoiceManager implements InvoiceService {
     }
 
     @Override
-    public Result add(CreateInvoiceRequest createInvoiceRequest) throws BusinessException {
+    public Invoice add(CreateInvoiceRequest createInvoiceRequest) throws BusinessException {
         rentalService.checkIfRentalExists(createInvoiceRequest.getRentalId());
         Rental rental=rentalService.getRentalById(createInvoiceRequest.getRentalId());
         Invoice invoice = this.modelMapperService.forRequest().map(createInvoiceRequest, Invoice.class);
@@ -68,7 +68,7 @@ public class InvoiceManager implements InvoiceService {
         invoice.setInvoiceId(0);
         invoiceDao.save(invoice);
 
-        return new SuccessResult(BusinessMessages.DATA_ADDED_SUCCESSFULLY);
+        return invoice;
     }
 
     @Override

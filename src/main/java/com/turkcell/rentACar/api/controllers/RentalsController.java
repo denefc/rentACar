@@ -3,9 +3,7 @@ package com.turkcell.rentACar.api.controllers;
 import com.turkcell.rentACar.business.abstracts.RentalService;
 import com.turkcell.rentACar.business.dtos.RentalDto;
 import com.turkcell.rentACar.business.dtos.RentalListDto;
-import com.turkcell.rentACar.business.requests.createRequests.CreateCorporateCustomerRequest;
-import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequest;
-import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForCorporateCustomer;
+import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForCorporateCustomerRequest;
 import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForIndividualCustomer;
 import com.turkcell.rentACar.business.requests.updateRequests.UpdateRentalRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
@@ -40,14 +38,7 @@ public class RentalsController {
 
     }
 
-    @PostMapping("/add-rental-corporate-customer")
-    public Result addCorporateCustomerRental(@Valid @RequestBody CreateRentalRequestForCorporateCustomer createRentalRequestForCorporateCustomer) throws BusinessException{
-        return this.rentalService.addForCorporateCustomer(createRentalRequestForCorporateCustomer);
-    }
-    @PostMapping("/add-rental-individual-customer")
-    public Result add(@Valid @RequestBody CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomer) throws BusinessException{
-        return this.rentalService.addForIndividualCustomer(createRentalRequestForIndividualCustomer);
-    }
+
 
     @GetMapping("/get-by-id")
     public DataResult<RentalDto> getById(int id) throws BusinessException{

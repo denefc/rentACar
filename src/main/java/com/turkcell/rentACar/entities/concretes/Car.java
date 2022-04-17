@@ -33,6 +33,9 @@ public class Car {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
+    @Column(name = "kilometer_information")
+    private double kilometerInformation;
+
     @ManyToOne()
     @JoinColumn(name = "color_id")
     private Color color;

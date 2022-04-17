@@ -51,7 +51,7 @@ public class Rental {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "rental")
     private List<Payment> payments;
 
 

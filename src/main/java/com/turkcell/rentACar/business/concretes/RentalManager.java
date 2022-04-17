@@ -7,7 +7,7 @@ import com.turkcell.rentACar.business.dtos.RentReturnDto;
 import com.turkcell.rentACar.business.dtos.RentalDto;
 import com.turkcell.rentACar.business.dtos.RentalListDto;
 import com.turkcell.rentACar.business.requests.createRequests.CreateCarReturnRequest;
-import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForCorporateCustomer;
+import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForCorporateCustomerRequest;
 import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForIndividualCustomer;
 import com.turkcell.rentACar.business.requests.updateRequests.UpdateRentalRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
@@ -18,6 +18,7 @@ import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.RentalDao;
 import com.turkcell.rentACar.entities.concretes.CarMaintenance;
+import com.turkcell.rentACar.entities.concretes.Customer;
 import com.turkcell.rentACar.entities.concretes.Rental;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,10 +44,10 @@ public class RentalManager implements RentalService {
     private final CityService cityService;
 
     public RentalManager(RentalDao rentalDao, ModelMapperService modelMapperService,
-                         @Lazy CarMaintenanceService carMaintenanceService, @Lazy CarService carService, @Lazy OrderedAdditionalServiceService orderedAdditionalServiceService,
-                         @Lazy AdditionalServiceService additionalServiceService, @Lazy CustomerService customerService,
-                         CustomerService customerService1, @Lazy IndividualCustomerService individualCustomerService, CityService cityService,
-                         @Lazy CorporateCustomerService corporateCustomerService) {
+                          CarMaintenanceService carMaintenanceService,  CarService carService,  OrderedAdditionalServiceService orderedAdditionalServiceService,
+                          AdditionalServiceService additionalServiceService,  CustomerService customerService,
+                          IndividualCustomerService individualCustomerService, CityService cityService,
+                          CorporateCustomerService corporateCustomerService) {
 
         this.rentalDao = rentalDao;
         this.modelMapperService = modelMapperService;
@@ -55,7 +55,7 @@ public class RentalManager implements RentalService {
         this.carService = carService;
         this.orderedAdditionalServiceService = orderedAdditionalServiceService;
         this.additionalServiceService = additionalServiceService;
-        this.customerService = customerService1;
+        this.customerService = customerService;
         this.individualCustomerService = individualCustomerService;
         this.corporateCustomerService = corporateCustomerService;
         this.cityService = cityService;
@@ -71,35 +71,32 @@ public class RentalManager implements RentalService {
 
 
     @Override
-    public DataResult<Rental> addForIndividualCustomer(CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomer) throws BusinessException {
+    public int addForIndividualCustomer(CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomer) throws BusinessException {
         customerService.checkIfCustomerExists(createRentalRequestForIndividualCustomer.getIndividualCustomerId());
         carService.checkIfCarExists(createRentalRequestForIndividualCustomer.getCar_CarId());
         individualCustomerService.checkIfIndividualCustomerExists(createRentalRequestForIndividualCustomer.getIndividualCustomerId());
-        cityService.checkIfCityExists(createRentalRequestForIndividualCustomer.getReturnLocationIdCityId());
-        cityService.checkIfCityExists(createRentalRequestForIndividualCustomer.getPickUpLocationIdCityId());
+        cityService.checkIfCityExists(createRentalRequestForIndividualCustomer.getCityOfReturnLocation_CityId());
+        cityService.checkIfCityExists(createRentalRequestForIndividualCustomer.getCityOfPickUpLocation_CityId());
 
         checkIfCarAvailable(createRentalRequestForIndividualCustomer.getCar_CarId(),createRentalRequestForIndividualCustomer.getStartDate());
         checkIfLogicallyCarAvailable(createRentalRequestForIndividualCustomer.getStartDate(),createRentalRequestForIndividualCustomer.getEndDate());
         checkIfCarRented(createRentalRequestForIndividualCustomer.getCar_CarId(),createRentalRequestForIndividualCustomer.getStartDate());
 
-        Rental rental = this.modelMapperService.forDto().map(createRentalRequestForIndividualCustomer, Rental.class);
+        Rental rental = this.modelMapperService.forRequest().map(createRentalRequestForIndividualCustomer, Rental.class);
 
-
-
-        rental.setOrderedAdditionalServices(orderedAdditionalServiceService.getOrderedAdditionalServicesByRentalId(rental.getRentalId()));
-        orderedAdditionalServiceService.orderAdditionalServices(createRentalRequestForIndividualCustomer.getAdditionalServicesId(), rental.getRentalId());
-        rental.setCustomer(customerService.getCustomerById(createRentalRequestForIndividualCustomer.getIndividualCustomerId()));
+        rental.setCustomer(getCustomer(createRentalRequestForIndividualCustomer.getIndividualCustomerId()));
         rental.setRentStartKilometer(this.carService.getById(createRentalRequestForIndividualCustomer.getCar_CarId()).getData().getKilometerInformation());
         checkIfKilometerIsValid(rental);
 
         rental.setRentalId(0);
 
-        this.rentalDao.save(rental);
-        return new SuccessDataResult<>(rental,BusinessMessages.DATA_ADDED_SUCCESSFULLY);
+        Rental resultOfRental=this.rentalDao.save(rental);
+
+        return resultOfRental.getRentalId();
     }
 
     @Override
-    public DataResult<Rental> addForCorporateCustomer(CreateRentalRequestForCorporateCustomer createRentalRequestForCorporateCustomer) throws BusinessException {
+    public DataResult<Rental> addForCorporateCustomer(CreateRentalRequestForCorporateCustomerRequest createRentalRequestForCorporateCustomer) throws BusinessException {
         customerService.checkIfCustomerExists(createRentalRequestForCorporateCustomer.getCorporateCustomerId());
         carService.checkIfCarExists(createRentalRequestForCorporateCustomer.getCar_CarId());
         corporateCustomerService.checkIfCorporateCustomerExists(createRentalRequestForCorporateCustomer.getCorporateCustomerId());
@@ -230,6 +227,10 @@ public class RentalManager implements RentalService {
         if (rental.getRentStartKilometer() > rental.getReturnKilometer()) {
             throw new BusinessException(BusinessMessages.RETURN_KILOMETER_NOT_VALID_FOR_CAR + rental.getCar().getCarId());
         }
+    }
+
+    private Customer getCustomer(int customerId) throws BusinessException {
+        return this.customerService.getCustomerById(customerId);
     }
 
 

@@ -34,10 +34,6 @@ public class InvoicesController {
         return this.invoiceService.getInvoicesByRentalId(id);
     }
 
-    @PostMapping("/add")
-    public Result add(@RequestBody @Valid CreateInvoiceRequest createInvoiceRequest) throws BusinessException {
-        return invoiceService.add(createInvoiceRequest);
-    }
 
     @GetMapping("/get-by-id/{id}")
     public DataResult<InvoiceDto> getById(@RequestParam @PathVariable int id) throws BusinessException {

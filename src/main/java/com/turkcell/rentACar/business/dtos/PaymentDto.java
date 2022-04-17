@@ -13,13 +13,18 @@ public class PaymentDto {
 
     private String cardNo;
 
-    private String month;
 
-    private String year;
+    private String cardHolder;
 
-    private String cvv;
 
-    private String paymentDate;
+    private int expirationMonth;
+
+
+    private int expirationYear;
+
+
+    private int cvv;
+
 
     private double paymentTotal;
 }

@@ -1,7 +1,7 @@
 package com.turkcell.rentACar.business.adapters.posAdapters;
 
 import com.turkcell.rentACar.business.abstracts.PosService;
-import com.turkcell.rentACar.business.dtos.PosDto;
+import com.turkcell.rentACar.business.requests.createRequests.CreatePaymentRequest;
 import com.turkcell.rentACar.business.outServices.ZiraatBankManager;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.ErrorResult;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 @Primary
 public class ZiraatBankPosAdapter implements PosService {
     @Override
-    public Result makePayment(PosDto posDto) throws BusinessException {
+    public Result makePayment(CreatePaymentRequest createPaymentRequest) throws BusinessException {
         ZiraatBankManager ziraatBankManager=new ZiraatBankManager();
-        boolean result=ziraatBankManager.makePayment(posDto.getCardHolderName(), posDto.getCardNo(),posDto.getCvv());
+        boolean result=ziraatBankManager.makePayment(createPaymentRequest.getCardNo(), createPaymentRequest.getCardHolder(), createPaymentRequest.getExpirationMonth(), createPaymentRequest.getExpirationYear(), createPaymentRequest.getCvv());
        if(result){
            return  new SuccessResult();
        }

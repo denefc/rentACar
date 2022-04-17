@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Service
 public class ZiraatBankManager  {
-    public boolean makePayment(String cardHolderName,int cardNo,int cvv){
+    public boolean makePayment(String cardNo,String cardHolderName,int expirationMonth,int expirationYear,int cvv){
 
         return true;
     }

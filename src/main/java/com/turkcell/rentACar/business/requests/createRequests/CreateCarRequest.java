@@ -24,6 +24,10 @@ public class CreateCarRequest {
     private String description;
 
     @NotNull
+    @Min(0)
+    private double kilometreInformation;
+
+    @NotNull
     private int brandId;
     @NotNull
     private int colorId;

@@ -11,8 +11,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateInvoiceRequest {
-
-
     @NotNull
     private int rentalId;
 }

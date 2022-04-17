@@ -1,11 +1,14 @@
 package com.turkcell.rentACar.business.concretes;
 
-import com.turkcell.rentACar.api.models.PaymentModel;
+import com.turkcell.rentACar.api.models.CreateCorporatePaymentModel;
+import com.turkcell.rentACar.api.models.CreateIndividualPaymentModel;
+import com.turkcell.rentACar.api.models.DelayedPaymentModel;
 import com.turkcell.rentACar.business.abstracts.*;
 import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
+import com.turkcell.rentACar.business.requests.createRequests.CreateInvoiceRequest;
+import com.turkcell.rentACar.business.requests.createRequests.CreatePaymentRequest;
 import com.turkcell.rentACar.business.dtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.PaymentListDto;
-import com.turkcell.rentACar.business.requests.createRequests.CreateInvoiceRequest;
 import com.turkcell.rentACar.business.requests.updateRequests.UpdatePaymentRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
@@ -16,11 +19,11 @@ import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.PaymentDao;
 import com.turkcell.rentACar.entities.concretes.Invoice;
 import com.turkcell.rentACar.entities.concretes.Payment;
-import com.turkcell.rentACar.entities.concretes.Rental;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,15 +34,18 @@ public class PaymentManager implements PaymentService {
     private final PosService posService;
     private final InvoiceService invoiceService;
     private final RentalService rentalService;
+    private final OrderedAdditionalServiceService orderedAdditionalServiceService;
+    private final CustomerService customerService;
 
     @Autowired
-    public PaymentManager(PaymentDao paymentDao, ModelMapperService modelMapperService, PosService posService, InvoiceService invoiceService, RentalService rentalService) {
+    public PaymentManager(PaymentDao paymentDao, ModelMapperService modelMapperService, PosService posService, InvoiceService invoiceService, RentalService rentalService, OrderedAdditionalServiceService orderedAdditionalServiceService, CustomerService customerService) {
         this.paymentDao = paymentDao;
         this.modelMapperService = modelMapperService;
         this.posService = posService;
-
         this.invoiceService = invoiceService;
         this.rentalService = rentalService;
+        this.orderedAdditionalServiceService = orderedAdditionalServiceService;
+        this.customerService = customerService;
     }
 
     @Override
@@ -50,13 +56,25 @@ public class PaymentManager implements PaymentService {
         return new SuccessDataResult<>(paymentListDtos, BusinessMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
     @Override
-    @Transactional
-    public Result add(PaymentModel paymentModel) throws BusinessException {
-
-        //
-        return new SuccessResult();
+    public Result paymentForIndividualCustomer(CreateIndividualPaymentModel createIndividualPaymentModel) throws BusinessException {
+        posService.makePayment(createIndividualPaymentModel.getCreatePaymentRequest());
+        checkIfPaymentSuccess(createIndividualPaymentModel.getCreatePaymentRequest());
+        runPaymentSuccessorForIndividual(createIndividualPaymentModel);
+        return new SuccessResult(BusinessMessages.DATA_ADDED_SUCCESSFULLY);
     }
+
+    @Override
+    public Result paymentForCorporateCustomer(CreateCorporatePaymentModel createCorporatePaymentModel) throws BusinessException {
+        return null;
+    }
+
+    @Override
+    public Result additionalPaymentForDelaying(DelayedPaymentModel delayedPaymentModel) throws BusinessException {
+        return null;
+    }
+
 
     @Override
     public DataResult<PaymentDto> getById(int id) throws BusinessException {
@@ -70,10 +88,32 @@ public class PaymentManager implements PaymentService {
 
     @Override
     public Result delete(int id) throws BusinessException {
-        return null;
+        this.paymentDao.deleteById(id);
+
+        return new SuccessResult(BusinessMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
-    //hakanın vidyoyu izle
+    private void checkIfPaymentSuccess(CreatePaymentRequest createPaymentRequest)throws BusinessException{
+        if (!posService.makePayment(createPaymentRequest).isSuccess()){
+            throw new BusinessException(BusinessMessages.INVALID_PAYMENT);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
+    public void runPaymentSuccessorForIndividual(CreateIndividualPaymentModel createIndividualPaymentModel) throws BusinessException {
+        int rentalId = this.rentalService.addForIndividualCustomer(createIndividualPaymentModel.getCreateRentalRequestForIndividualCustomerRequest());
+        CreateInvoiceRequest createInvoiceRequest=this.modelMapperService.forDto().map(rentalId,CreateInvoiceRequest.class);
+        createInvoiceRequest.setRentalId(rentalId);
+        Invoice invoice = this.invoiceService.add(createInvoiceRequest);
+
+        this.orderedAdditionalServiceService.orderAdditionalServices(createIndividualPaymentModel.getCreateRentalRequestForIndividualCustomerRequest().getAdditionalServicesId(),rentalId);
+        Payment payment = this.modelMapperService.forRequest().map(createIndividualPaymentModel.getCreatePaymentRequest(), Payment.class);
+        payment.setCustomer(customerService.getCustomerById(createIndividualPaymentModel.getCreateRentalRequestForIndividualCustomerRequest().getIndividualCustomerId()));
+        payment.setPaymentAmount(invoice.getTotalPayment());
+
+        this.paymentDao.save(payment);
+
+    }
 
 
 

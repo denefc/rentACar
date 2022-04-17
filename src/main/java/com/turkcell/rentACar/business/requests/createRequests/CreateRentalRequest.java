@@ -18,11 +18,11 @@ import java.time.LocalDate;
 public class CreateRentalRequest {
 
     @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE,pattern = "dd-MM-yyyy")
     private LocalDate startDate;
 
     @Nullable
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE,pattern = "dd-MM-yyyy")
     private LocalDate endDate;
 
     @NotNull
