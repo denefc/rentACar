@@ -130,6 +130,8 @@ public class OrderedAdditionalServiceManager implements OrderedAdditionalService
         for(int i = 0; i<additonalServices.size(); i++) {
             additionalServiceService.checkIfAdditionalServiceExists(additonalServices.get(i));
             CreateOrderedAdditionalServiceRequest createOrderedAdditionalServiceRequest = new CreateOrderedAdditionalServiceRequest(additonalServices.get(i),rentalId);
+            createOrderedAdditionalServiceRequest.setAdditionalServiceAdditionalServiceId(additonalServices.get(i));
+            createOrderedAdditionalServiceRequest.setRentalId(rentalId);
             this.add(createOrderedAdditionalServiceRequest);
         }
     }

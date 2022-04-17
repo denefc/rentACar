@@ -71,7 +71,7 @@ public class RentalManager implements RentalService {
 
 
     @Override
-    public int addForIndividualCustomer(CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomer) throws BusinessException {
+    public DataResult<Rental> addForIndividualCustomer(CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomer) throws BusinessException {
         customerService.checkIfCustomerExists(createRentalRequestForIndividualCustomer.getIndividualCustomerId());
         carService.checkIfCarExists(createRentalRequestForIndividualCustomer.getCar_CarId());
         individualCustomerService.checkIfIndividualCustomerExists(createRentalRequestForIndividualCustomer.getIndividualCustomerId());
@@ -88,11 +88,13 @@ public class RentalManager implements RentalService {
         rental.setRentStartKilometer(this.carService.getById(createRentalRequestForIndividualCustomer.getCar_CarId()).getData().getKilometerInformation());
         checkIfKilometerIsValid(rental);
 
+
         rental.setRentalId(0);
 
-        Rental resultOfRental=this.rentalDao.save(rental);
 
-        return resultOfRental.getRentalId();
+        Rental response=this.rentalDao.save(rental);
+
+        return new SuccessDataResult<>(response,BusinessMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override

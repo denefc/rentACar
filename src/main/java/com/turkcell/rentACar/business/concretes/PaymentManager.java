@@ -9,6 +9,7 @@ import com.turkcell.rentACar.business.requests.createRequests.CreateInvoiceReque
 import com.turkcell.rentACar.business.requests.createRequests.CreatePaymentRequest;
 import com.turkcell.rentACar.business.dtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.PaymentListDto;
+import com.turkcell.rentACar.business.requests.createRequests.CreateRentalRequestForIndividualCustomer;
 import com.turkcell.rentACar.business.requests.updateRequests.UpdatePaymentRequest;
 import com.turkcell.rentACar.core.utilities.exceptions.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
@@ -19,6 +20,7 @@ import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.PaymentDao;
 import com.turkcell.rentACar.entities.concretes.Invoice;
 import com.turkcell.rentACar.entities.concretes.Payment;
+import com.turkcell.rentACar.entities.concretes.Rental;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -101,18 +103,22 @@ public class PaymentManager implements PaymentService {
 
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
     public void runPaymentSuccessorForIndividual(CreateIndividualPaymentModel createIndividualPaymentModel) throws BusinessException {
-        int rentalId = this.rentalService.addForIndividualCustomer(createIndividualPaymentModel.getCreateRentalRequestForIndividualCustomerRequest());
-        CreateInvoiceRequest createInvoiceRequest=this.modelMapperService.forDto().map(rentalId,CreateInvoiceRequest.class);
-        createInvoiceRequest.setRentalId(rentalId);
+        Rental rental=getRental(createIndividualPaymentModel.getCreateRentalRequestForIndividualCustomerRequest());
+        CreateInvoiceRequest createInvoiceRequest=new CreateInvoiceRequest(rental.getRentalId());
+        this.orderedAdditionalServiceService.orderAdditionalServices(createIndividualPaymentModel.getCreateRentalRequestForIndividualCustomerRequest().getAdditionalServicesId(),rental.getRentalId());
+        rental.setOrderedAdditionalServices(orderedAdditionalServiceService.getOrderedAdditionalServicesByRentalId(rental.getRentalId()));
         Invoice invoice = this.invoiceService.add(createInvoiceRequest);
 
-        this.orderedAdditionalServiceService.orderAdditionalServices(createIndividualPaymentModel.getCreateRentalRequestForIndividualCustomerRequest().getAdditionalServicesId(),rentalId);
         Payment payment = this.modelMapperService.forRequest().map(createIndividualPaymentModel.getCreatePaymentRequest(), Payment.class);
         payment.setCustomer(customerService.getCustomerById(createIndividualPaymentModel.getCreateRentalRequestForIndividualCustomerRequest().getIndividualCustomerId()));
         payment.setPaymentAmount(invoice.getTotalPayment());
 
         this.paymentDao.save(payment);
 
+    }
+
+    private Rental getRental(CreateRentalRequestForIndividualCustomer createRentalRequestForIndividualCustomerRequest) throws BusinessException {
+        return this.rentalService.addForIndividualCustomer(createRentalRequestForIndividualCustomerRequest).getData();
     }
 
 

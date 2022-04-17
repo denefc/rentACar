@@ -28,7 +28,7 @@ public class PaymentsController {
     public DataResult<List<PaymentListDto>> getAll() throws BusinessException {
         return paymentService.getAll();
     }
-    @Transactional
+
     @PostMapping("/payment-individual-customer")
     public Result paymentForIndividualCustomer(@RequestBody CreateIndividualPaymentModel createIndividualPaymentModel) throws BusinessException {
         return paymentService.paymentForIndividualCustomer(createIndividualPaymentModel);
