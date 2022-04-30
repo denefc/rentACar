@@ -92,7 +92,7 @@ public class PaymentManager implements PaymentService {
 
         PaymentDto paymentDto = this.modelMapperService.forDto().map(payment, PaymentDto.class);
 
-        return new SuccessDataResult<PaymentDto>(paymentDto);
+        return new SuccessDataResult<>(paymentDto);
 
     }
 
